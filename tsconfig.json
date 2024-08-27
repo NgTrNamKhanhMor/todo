@@ -106,6 +106,9 @@
       ],
       "~DeleteDialog/*": [
         "src/components/DeleteDialog/*"
+      ],
+      "~types/*": [
+        "src/types/*"
       ]
     }
   }
