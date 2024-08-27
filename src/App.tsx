@@ -1,6 +1,7 @@
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom"
 import Home from "~components/Home/Home"
-import Login from "~components/Login/Login"
+import Login from "~components/Authentication/Authentication"
+import { CssBaseline } from "@mui/material"
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -14,7 +15,10 @@ const router = createBrowserRouter(
 function App() {
 
   return (
+    <>
+    <CssBaseline />
     <RouterProvider router={router}/>
+    </>
   )
 }
 

@@ -14,6 +14,7 @@ export default tseslint.config(
       globals: globals.browser,
     },
     plugins: {
+      perfectionist,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
@@ -22,6 +23,13 @@ export default tseslint.config(
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
+      ],
+      'perfectionist/sort-imports': [
+        'error',
+        {
+          type: 'natural',
+          order: 'asc',
+        },
       ],
     },
   },

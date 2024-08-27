@@ -3,7 +3,6 @@ type ColoredBoxProps = {
   color: string,
 }
 export default function ColoredBox({color}: ColoredBoxProps) {
-  console.log(color)
   return (
     <>
         <Box

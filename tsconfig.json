@@ -101,17 +101,11 @@
       "~/*": [
         "src/*"
       ],
-      "~ColoredBox/*": [
-        "src/components/ColoredBox/*"
+      "~Authentication/*": [
+        "src/components/Authentication/*"
       ],
-      "~NavCategoryItem/*": [
-        "src/components/NavCategoryItem/*"
-      ],
-      "~SideCategoryItem/*": [
-        "src/components/SideCategoryItem/*"
-      ],
-      "~SideBarCategoryItem/*": [
-        "src/components/SideBarCategoryItem/*"
+      "~DeleteDialog/*": [
+        "src/components/DeleteDialog/*"
       ]
     }
   }
