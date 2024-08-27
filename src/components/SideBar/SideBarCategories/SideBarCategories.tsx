@@ -1,21 +1,33 @@
 import { Add } from "@mui/icons-material";
 import { Chip, IconButton, List, ListItemButton, ListItemText, Typography } from "@mui/material";
+import { useState } from "react";
+import AddCategoryDialog from "~components/AddCategoryDialog/AddCategoryDialog";
 import ColoredBox from "~components/ColoredBox/ColoredBox";
 
 export default function SideBarCategories() {
+    const [openCategory, setCategoryOpen] = useState(false);
+
+    const handleOpenAddCategoryDialog = () => {
+        setCategoryOpen(true);
+    };
+
+    const handleCloseAddCategoryDialog = () => {
+        setCategoryOpen(false);
+    };
+
     return (
         <>
             <Typography variant="h6" gutterBottom>
                 Categories
             </Typography>
             <List>
-                <ListItemButton>
+                <ListItemButton onClick={handleOpenAddCategoryDialog}>
                     <IconButton disableRipple>
                         <Add sx={{ marginRight: 1 }} />
                     </IconButton>
                     <ListItemText primary="Add a category" />
-
                 </ListItemButton>
+                {/* Existing categories */}
                 <ListItemButton>
                     <IconButton disableRipple>
                         <ColoredBox color={"red"} />
@@ -44,6 +56,7 @@ export default function SideBarCategories() {
                     </IconButton>
                 </ListItemButton>
             </List>
+            <AddCategoryDialog open={openCategory} onClose={handleCloseAddCategoryDialog} />
         </>
     )
 }

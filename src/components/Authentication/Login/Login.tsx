@@ -7,8 +7,10 @@ import {
   Paper,
   Avatar,
 } from "@mui/material";
-
-export default function Login({ handleSwitch }) {
+type LoginProps = {
+  handleSwitch: ()=> void,
+}
+export default function Login({ handleSwitch }: LoginProps) {
   return (
     <Paper
       elevation={3}

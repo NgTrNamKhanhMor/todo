@@ -1,47 +1,57 @@
 import { Menu } from '@mui/icons-material';
-import { Box, IconButton, Grid } from '@mui/material';
-import { useState } from 'react';
+import { Box, IconButton, Grid, Stack } from '@mui/material';
+import { createContext, useState } from 'react';
+import { Task } from '~/types/task';
 import Main from '~components/Main/Main';
 import RightBar from '~components/RightBar/RightBar';
 import SideBar from '~components/SideBar/SideBar';
 
+type TaskContextType = {
+  openRightBar: (selectedTask: Task | null) => void ;
+};
+const defaultTaskContext: TaskContextType = {
+  openRightBar: () => {}, 
+};
+export const TaskContext = createContext<TaskContextType>(defaultTaskContext);
+
 export default function Home() {
-  const [sideBarOpen, setSideBarOpen] = useState(false);
+  const [sideBarOpen, setSideBarOpen] = useState(true);
   const [rightBarOpen, setRightBarOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null >(null);
 
   const toggleSideBar = () => {
     setSideBarOpen(!sideBarOpen);
   };
 
-  const toggleRightBar = () => {
-    setRightBarOpen(!rightBarOpen);
+  const openRightBar = (selectedTask: Task | null) => {
+    setSelectedTask(selectedTask)
+    setRightBarOpen(true);
+  };
+  const closeRightBar = () => {
+    setSelectedTask(null)
+    setRightBarOpen(false);
   };
 
   return (
     <Grid container>
-      {/* Sidebar */}
       <Grid
         item
-        xs={sideBarOpen ? 2 : 0} 
+        xs={sideBarOpen ? 3 : 0}
         sx={{
-          display: { xs: sideBarOpen ? 'block' : 'none', md: 'block' }, 
+          display: { xs: sideBarOpen ? 'block' : 'none', md: 'block' },
           transition: 'width 0.3s ease',
-          backgroundColor: '#f5f5f5',
         }}
       >
         <SideBar open={sideBarOpen} toggleDrawer={toggleSideBar} />
       </Grid>
 
-      {/* Main content */}
       <Grid
         item
         xs
         sx={{
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'row',
           transition: 'margin-right 0.3s ease',
-          // marginLeft: sideBarOpen ? '300px' : '0px',
-          // marginRight: rightBarOpen ? '300px' : '0px',
         }}
       >
         <Box>
@@ -49,29 +59,30 @@ export default function Home() {
             <IconButton
               onClick={toggleSideBar}
               sx={{
-                position: 'fixed',
-                left: 30,
-                top: 60,
-                zIndex: 1300
+                ml: 5,
+                mr: 7,
+                mt: 7
               }}
             >
               <Menu />
             </IconButton>
           )}
         </Box>
-        <Main />
+        <TaskContext.Provider value={{ openRightBar }}>
+          <Main />
+        </TaskContext.Provider>
+
       </Grid>
 
-      {/* Right Bar */}
       <Grid
         item
-        xs={rightBarOpen ? 3 : 0} // Adjust size based on right bar state
+        xs={rightBarOpen ? 3 : 0}
         sx={{
-          display: { xs: rightBarOpen ? 'block' : 'none', md: 'block' }, // Adjust display based on screen size
+          display: { xs: rightBarOpen ? 'block' : 'none', md: 'block' },
           transition: 'width 0.3s ease',
         }}
       >
-        <RightBar open={rightBarOpen} toggleDrawer={toggleRightBar} />
+        <RightBar open={rightBarOpen} closeRightBar={closeRightBar} selectedTask={selectedTask} />
       </Grid>
     </Grid>
   );

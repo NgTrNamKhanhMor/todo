@@ -1,7 +1,9 @@
 import { Box, TextField, Button, Typography, Paper, Avatar } from '@mui/material';
 import { LockOutlined } from '@mui/icons-material';
-
-export default function Register({ handleSwitch }) {
+type RegisterProps = {
+  handleSwitch: ()=> void,
+}
+export default function Register({ handleSwitch }: RegisterProps) {
   return (
     <Paper
       elevation={3}
