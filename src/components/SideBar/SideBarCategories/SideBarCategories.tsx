@@ -21,7 +21,7 @@ export default function SideBarCategories({ open }: SideBarCategoriesProps) {
 
   return (
     <>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom textAlign={open? 'start': 'center'}>
         {open ? 'Categories' : 'Tags'}
       </Typography>
       <List>
@@ -32,7 +32,7 @@ export default function SideBarCategories({ open }: SideBarCategoriesProps) {
           {open && <ListItemText primary="Add a category" />}
         </ListItemButton>
 
-        <ListItemButton>
+        <ListItemButton alignItems="center">
           <ListItemIcon>
               <ColoredBox color={"red"} />
           </ListItemIcon>

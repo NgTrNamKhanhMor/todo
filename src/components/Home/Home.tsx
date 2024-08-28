@@ -1,12 +1,14 @@
 import { Box } from '@mui/material';
 import { createContext, useState } from 'react';
+import { openRightBar } from '~/types/openRightBar';
+import { selectedTask } from '~/types/selectedTask';
 import { Task } from '~/types/task';
 import Main from '~components/Main/Main';
 import RightBar from '~components/RightBar/RightBar';
 import SideBar from '~components/SideBar/SideBar';
 
 type TaskContextType = {
-  openRightBar: (selectedTask: Task | null) => void;
+  openRightBar: openRightBar;
 };
 const defaultTaskContext: TaskContextType = {
   openRightBar: () => { },
@@ -16,13 +18,13 @@ export const TaskContext = createContext<TaskContextType>(defaultTaskContext);
 export default function Home() {
   const [sideBarOpen, setSideBarOpen] = useState(true);
   const [rightBarOpen, setRightBarOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedTask, setSelectedTask] = useState<selectedTask>(null);
 
   const toggleSideBar = () => {
     setSideBarOpen(!sideBarOpen);
   };
 
-  const openRightBar = (selectedTask: Task | null) => {
+  const openRightBar = (selectedTask: selectedTask) => {
     setSelectedTask(selectedTask)
     setRightBarOpen(true);
   };
@@ -32,7 +34,7 @@ export default function Home() {
   };
 
   return (
-    <Box display='flex' width="100%">
+    <Box display='flex' width={1}>
       {/* Left Nav */}
        <SideBar open={sideBarOpen} toggleDrawer={toggleSideBar} />
       {/* Main Section */}

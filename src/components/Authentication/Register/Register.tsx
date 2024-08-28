@@ -1,20 +1,13 @@
-import { LockOutlined } from '@mui/icons-material';
-import { Avatar, Box, Button, Paper, TextField, Typography } from '@mui/material';
+import { LockOutlined } from "@mui/icons-material";
+import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
+import { StyledPaper } from "~components/Authentication/Paper/Paper.style";
 type RegisterProps = {
-  handleSwitch: ()=> void,
-}
+  handleSwitch: () => void;
+};
 export default function Register({ handleSwitch }: RegisterProps) {
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        padding: '40px',
-        maxWidth: '400px',
-        width: '100%',
-        textAlign: 'center',
-      }}
-    >
-      <Avatar sx={{ m: 1, bgcolor: 'primary', margin: '0 auto' }}>
+    <StyledPaper>
+      <Avatar sx={{ mx: "auto", bgcolor: "primary" }}>
         <LockOutlined />
       </Avatar>
       <Typography component="h1" variant="h5" mb={2}>
@@ -23,9 +16,9 @@ export default function Register({ handleSwitch }: RegisterProps) {
       <Box
         component="form"
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '16px',
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
         }}
         noValidate
       >
@@ -68,17 +61,17 @@ export default function Register({ handleSwitch }: RegisterProps) {
           color="primary"
           sx={{ mt: 2 }}
         >
-          Register
+          Registers
         </Button>
       </Box>
       <Box mt={2}>
         <Typography variant="body2">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Button variant="text" onClick={handleSwitch} color="primary">
             Login
           </Button>
         </Typography>
       </Box>
-    </Paper>
+    </StyledPaper>
   );
 }

@@ -3,25 +3,17 @@ import {
   Avatar,
   Box,
   Button,
-  Paper,
   TextField,
-  Typography,
+  Typography
 } from "@mui/material";
+import { StyledPaper } from "~components/Authentication/Paper/Paper.style";
 type LoginProps = {
   handleSwitch: ()=> void,
 }
 export default function Login({ handleSwitch }: LoginProps) {
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        padding: "40px",
-        maxWidth: "400px",
-        width: "100%",
-        textAlign: "center",
-      }}
-    >
-      <Avatar sx={{ m: 1, bgcolor: "primary", margin: "0 auto" }}>
+    <StyledPaper>
+      <Avatar sx={{ mx: 'auto', bgcolor: "primary"}}>
         <LockOutlined />
       </Avatar>
       <Typography component="h1" variant="h5" mb={2}>
@@ -32,7 +24,7 @@ export default function Login({ handleSwitch }: LoginProps) {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: "16px",
+          gap: 3,
         }}
         noValidate
       >
@@ -76,6 +68,6 @@ export default function Login({ handleSwitch }: LoginProps) {
           </Button>
         </Typography>
       </Box>
-    </Paper>
+    </StyledPaper>
   );
 }

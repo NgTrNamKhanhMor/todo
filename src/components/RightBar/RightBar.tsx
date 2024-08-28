@@ -9,16 +9,19 @@ type RightBarProps = {
   selectedTask: Task | null,
 }
 export default function RightBar({ open, closeRightBar, selectedTask }: RightBarProps) {
+  const theme = useTheme();
+  const drawerWidth = 400;
+  const collapsedWidth = 150;
+
   const [dueDateEnabled, setDueDateEnabled] = useState(false);
   const [taskName, setTaskName] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [taskCategory, setTaskCategory] = useState('');
   const [taskDate, setTaskDate] = useState('');
   const [header, setHeader] = useState('');
-  const theme = useTheme();
-  const drawerWidth = 400;
-  const collapsedWidth = 150;
+
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
+
   useEffect(() => {
     if (selectedTask) {
       setTaskName(selectedTask.name);
@@ -62,7 +65,6 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
       open={open}
       sx={{
         width: open ? drawerWidth : {xxs: 0 , lg: collapsedWidth},
-        flexShrink: 0,
         '& .MuiDrawer-paper': {
           width: open ? drawerWidth : collapsedWidth,
           height: '100%',
@@ -85,7 +87,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
         py={4}
         px={open ? 4 : 2} 
         display='flex' 
-        height="100%"
+        height= {1}
         flexDirection='column' 
         justifyContent='space-between' 
         borderRadius={4}
@@ -96,7 +98,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
           })
         }}
         >
-        <Box>
+        <Box display='flex' flexDirection='column' gap={2}>
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
             <Typography variant="h5" textTransform="uppercase">
               {header}
@@ -113,7 +115,6 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
             fullWidth
             value={taskName}
             onChange={(e) => setTaskName(e.target.value)}
-            sx={{ marginBottom: '20px' }}
           />
 
           <TextField
@@ -125,10 +126,9 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
             onChange={(e) => setTaskDescription(e.target.value)}
             rows={3}
             fullWidth
-            sx={{ marginBottom: '20px' }}
           />
 
-          <FormControl fullWidth sx={{ marginBottom: '20px' }}>
+          <FormControl fullWidth>
             <InputLabel id="task-category-label">Task Category</InputLabel>
             <Select
               labelId="task-category-label"
@@ -150,7 +150,6 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
               <Checkbox checked={dueDateEnabled} onChange={handleDueDateChange} />
             }
             label="Set Due Date"
-            sx={{ marginBottom: '20px' }}
           />
 
           <TextField
@@ -163,7 +162,6 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
             fullWidth
             disabled={!dueDateEnabled}
             InputLabelProps={{ shrink: true }}
-            sx={{ marginBottom: '20px' }}
           />
         </Box>
 

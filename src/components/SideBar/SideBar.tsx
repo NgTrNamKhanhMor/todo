@@ -24,7 +24,6 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
         open={open}
         sx={{
           width: open ? drawerWidth : collapsedWidth,
-          flexShrink: 0,
           '& .MuiDrawer-paper': {
             width: open ? drawerWidth : collapsedWidth,
             transition: theme.transitions.create('width', {
@@ -69,7 +68,7 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
               </IconButton>
             </Box>
             <ListItem>
-              <ListItemIcon onClick={open ? () => { } : toggleDrawer}>
+              <ListItemIcon onClick={open ? () => {} : toggleDrawer}>
                 <Search />
               </ListItemIcon>
               {open && (
@@ -78,14 +77,13 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
                   variant="outlined"
                   size="small"
                   fullWidth
-                  sx={{ flexGrow: 1 }}
                 />
               )}
             </ListItem>
 
 
             <SideBarTasks open={open} />
-            <Divider sx={{ margin: '20px 0' }} />
+            <Divider sx={{ my: 3 }} />
             <SideBarCategories open={open} />
           </Box>
 

@@ -7,7 +7,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route index element={<Home />} />
-      <Route path="/login" element={<Login/>} />
+      <Route path="/login" element={<Login />} />
     </Route>
   )
 )
@@ -16,8 +16,8 @@ function App() {
 
   return (
     <>
-    <CssBaseline />
-    <RouterProvider router={router}/>
+      <CssBaseline />
+      <RouterProvider router={router} />
     </>
   )
 }

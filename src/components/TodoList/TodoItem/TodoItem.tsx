@@ -12,15 +12,9 @@ export default function TodoItem({task}: TodoItemProps) {
 
   return (
     <>
-      <ListItem
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Box display="flex" alignItems="center" width="100%">
-          <Checkbox sx={{ marginRight: "16px" }} />
+      <ListItem>
+        <Box display="flex" alignItems="center" width={1}>
+          <Checkbox sx={{ marginRight: 2 }} />
           <Box display="flex" flexDirection="column" flexGrow={1}>
             <Typography variant="h6">{task.name}</Typography>
             <Typography variant="body2" color="text.secondary">

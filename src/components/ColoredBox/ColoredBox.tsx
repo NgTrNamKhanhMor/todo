@@ -7,8 +7,8 @@ export default function ColoredBox({color}: ColoredBoxProps) {
     <>
         <Box
             sx={{
-                width: 16,
-                height: 16,
+                width: 24,
+                height: 24,
                 backgroundColor: color,
                 borderRadius: '4px',
             }}

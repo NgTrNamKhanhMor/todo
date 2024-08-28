@@ -4,7 +4,6 @@ type RightBarProps = {
   onClose: ()=> void,
 }
 export default function AddCategoryDialog({open, onClose}: RightBarProps) {
-  console.log(open)
     return (
         <Dialog
           open={open}
