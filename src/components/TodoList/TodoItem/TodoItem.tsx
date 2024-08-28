@@ -1,6 +1,6 @@
-import { ArrowForwardIos } from '@mui/icons-material'
-import { Box, Checkbox, Divider, IconButton, ListItem, Typography } from '@mui/material'
-import React, { useContext } from 'react'
+import { ArrowForwardIos } from '@mui/icons-material';
+import { Box, Checkbox, Divider, IconButton, ListItem, Typography } from '@mui/material';
+import { useContext } from 'react';
 import { Task } from '~/types/task';
 import { TaskContext } from '~components/Home/Home';
 type TodoItemProps = {

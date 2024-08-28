@@ -1,7 +1,7 @@
-import { Box} from '@mui/material';
+import { Box } from '@mui/material';
 import { useState } from 'react';
-import Register from '~components/Authentication/Register/Register';
 import Login from '~components/Authentication/Login/Login';
+import Register from '~components/Authentication/Register/Register';
 
 export default function AuthPage() {
   const [isRegistering, setIsRegistering] = useState(false);

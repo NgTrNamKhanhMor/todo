@@ -101,14 +101,11 @@
       "~/*": [
         "src/*"
       ],
-      "~Authentication/*": [
-        "src/components/Authentication/*"
-      ],
-      "~DeleteDialog/*": [
-        "src/components/DeleteDialog/*"
-      ],
       "~types/*": [
         "src/types/*"
+      ],
+      "~data/*": [
+        "src/data/*"
       ]
     }
   }

@@ -1,55 +1,104 @@
 import { Logout, Menu, Search } from '@mui/icons-material';
-import { Box, Typography, IconButton, TextField, Divider, Button, Drawer } from '@mui/material';
-import SideBarTasks from './SideBarTasks/SideBarTasks';
+import { Box, Button, Divider, Drawer, IconButton, ListItem, ListItemIcon, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
 import SideBarCategories from './SideBarCategories/SideBarCategories';
+import SideBarTasks from './SideBarTasks/SideBarTasks';
+
 type SideBarProps = {
   open: boolean,
-  toggleDrawer: ()=> void,
+  toggleDrawer: () => void,
 }
-export default function SideBar({ open, toggleDrawer }:SideBarProps) {
 
-    return (
-        <Drawer
-          variant="persistent"
-          anchor="left"
-          open={open}
+export default function SideBar({ open, toggleDrawer }: SideBarProps) {
+  const theme = useTheme();
+  const drawerWidth = 400;
+  const collapsedWidth = 150;
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
+  return (
+    <>
+      {!isLargeScreen && (
+          <Menu onClick={toggleDrawer} sx={{mt: 7, mx: 4}}/>
+      )}
+      <Drawer
+        variant={isLargeScreen ? 'permanent' : 'temporary'}
+        anchor="left"
+        open={open}
+        sx={{
+          width: open ? drawerWidth : collapsedWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: open ? drawerWidth : collapsedWidth,
+            transition: theme.transitions.create('width', {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.standard,
+            }),
+            overflowX: 'hidden',
+            display: 'flex',
+            height: '100%',
+            flexDirection: 'column',
+            bgcolor: 'transparent',
+            border: 'none',
+            boxShadow: 'none',
+            justifyContent: 'space-between',
+          },
+        }}
+      >
+        <Box
+          bgcolor='rgb(244,244,244)'
+          m={4}
+          py={4}
+          px={open ? 4 : 2}
+          height="100%"
+          display='flex'
+          flexDirection='column'
+          justifyContent='space-between'
+          borderRadius={4}
           sx={{
-            '& .MuiDrawer-paper': {
-              padding: 4,
-              border: 'none',
-            },
+            transition: theme.transitions.create('width', {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.standard,
+            })
           }}
         >
-          <Box bgcolor='rgb(244,244,244)' p={4} height={1} display='flex' flexDirection='column' justifyContent='space-between' borderRadius={4}>
-            <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-              <Typography variant="h5" textTransform='uppercase'>Menu</Typography>
+          <Box>
+            <Box display="flex" alignItems="center" justifyContent={open ? 'space-between' : 'center'} mb={2}>
+              {open && (
+                <Typography variant="h5" textTransform='uppercase'>Menu</Typography>
+              )}
               <IconButton size="small" onClick={toggleDrawer}>
                 <Menu />
               </IconButton>
             </Box>
-    
-            <TextField
-              placeholder="Search tasks..."
-              variant="outlined"
-              size="small"
-              InputProps={{
-                startAdornment: <Search sx={{ mr: 1 }} />,
-              }}
-              sx={{ marginBottom: '20px' }}
-            />
-    
-            <SideBarTasks />
-    
+            <ListItem>
+              <ListItemIcon onClick={open ? () => { } : toggleDrawer}>
+                <Search />
+              </ListItemIcon>
+              {open && (
+                <TextField
+                  placeholder="Search tasks..."
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  sx={{ flexGrow: 1 }}
+                />
+              )}
+            </ListItem>
+
+
+            <SideBarTasks open={open} />
             <Divider sx={{ margin: '20px 0' }} />
-    
-            <SideBarCategories />
-    
-            <Box mt="auto">
+            <SideBarCategories open={open} />
+          </Box>
+
+          {open && (
+            <Box>
               <Button variant="outlined" color="secondary" startIcon={<Logout />}>
                 Log Out
               </Button>
             </Box>
-          </Box>
-        </Drawer>
-      );
+          )}
+        </Box>
+      </Drawer>
+    </>
+
+  );
 }

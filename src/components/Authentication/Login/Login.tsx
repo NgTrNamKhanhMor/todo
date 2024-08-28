@@ -1,11 +1,11 @@
 import { LockOutlined } from "@mui/icons-material";
 import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Paper,
   Avatar,
+  Box,
+  Button,
+  Paper,
+  TextField,
+  Typography,
 } from "@mui/material";
 type LoginProps = {
   handleSwitch: ()=> void,

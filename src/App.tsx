@@ -1,7 +1,7 @@
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom"
-import Home from "~components/Home/Home"
-import Login from "~components/Authentication/Authentication"
 import { CssBaseline } from "@mui/material"
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom"
+import Login from "~components/Authentication/Authentication"
+import Home from "~components/Home/Home"
 
 const router = createBrowserRouter(
   createRoutesFromElements(

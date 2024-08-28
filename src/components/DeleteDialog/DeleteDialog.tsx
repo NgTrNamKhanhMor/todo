@@ -1,5 +1,4 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import React, { useState } from 'react'
 type RightBarProps = {
   open: boolean,
   onClose: ()=> void,

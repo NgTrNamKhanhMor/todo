@@ -1,11 +1,11 @@
 import { Close } from '@mui/icons-material';
-import { Box, Typography, IconButton, TextField, Button, Drawer, Select, MenuItem, Checkbox, FormControlLabel } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { Box, Button, Checkbox, Drawer, FormControl, FormControlLabel, IconButton, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { Task } from '~/types/task';
 import DeleteDialog from '~components/DeleteDialog/DeleteDialog';
 type RightBarProps = {
   open: boolean,
-  closeRightBar: ()=> void,
+  closeRightBar: () => void,
   selectedTask: Task | null,
 }
 export default function RightBar({ open, closeRightBar, selectedTask }: RightBarProps) {
@@ -15,7 +15,10 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
   const [taskCategory, setTaskCategory] = useState('');
   const [taskDate, setTaskDate] = useState('');
   const [header, setHeader] = useState('');
-  console.log(selectedTask)
+  const theme = useTheme();
+  const drawerWidth = 400;
+  const collapsedWidth = 150;
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
   useEffect(() => {
     if (selectedTask) {
       setTaskName(selectedTask.name);
@@ -51,22 +54,48 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
   };
 
   const handleSaveTask = () => {
-    // Handle task saving logic here
   };
   return (
     <Drawer
-      variant="persistent"
+      variant={isLargeScreen ? 'persistent' : 'temporary'}
       anchor="right"
       open={open}
       sx={{
+        width: open ? drawerWidth : {xxs: 0 , lg: collapsedWidth},
+        flexShrink: 0,
         '& .MuiDrawer-paper': {
-          width: 450,
-          padding: 4,
+          width: open ? drawerWidth : collapsedWidth,
+          height: '100%',
+          transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.standard,
+          }),
+          overflowX: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          bgcolor: 'transparent',
           border: 'none',
+          boxShadow: 'none',
+          justifyContent: 'space-between',
         },
       }}
     >
-      <Box bgcolor='rgb(244,244,244)' p={4} height={1} display='flex' flexDirection='column' justifyContent='space-between' borderRadius={4}>
+      <Box bgcolor='rgb(244,244,244)' 
+        m={4}
+        py={4}
+        px={open ? 4 : 2} 
+        display='flex' 
+        height="100%"
+        flexDirection='column' 
+        justifyContent='space-between' 
+        borderRadius={4}
+        sx={{
+          transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.standard,
+          })
+        }}
+        >
         <Box>
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
             <Typography variant="h5" textTransform="uppercase">
@@ -99,19 +128,22 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
             sx={{ marginBottom: '20px' }}
           />
 
-          <Select
-            label="Category"
-            variant="outlined"
-            fullWidth
-            value={taskCategory}
-            onChange={(e) => setTaskCategory(e.target.value)}
-            sx={{ marginBottom: '20px' }}
-          >
-            <MenuItem value="" disabled>Select Category</MenuItem>
-            <MenuItem value="Work">Work</MenuItem>
-            <MenuItem value="Personal">Personal</MenuItem>
-            <MenuItem value="Urgent">Urgent</MenuItem>
-          </Select>
+          <FormControl fullWidth sx={{ marginBottom: '20px' }}>
+            <InputLabel id="task-category-label">Task Category</InputLabel>
+            <Select
+              labelId="task-category-label"
+              value={taskCategory}
+              onChange={(e) => setTaskCategory(e.target.value)}
+              label="Task Category"
+            >
+              <MenuItem value="" disabled>
+                Select Category
+              </MenuItem>
+              <MenuItem value="Work">Work</MenuItem>
+              <MenuItem value="Personal">Personal</MenuItem>
+              <MenuItem value="Urgent">Urgent</MenuItem>
+            </Select>
+          </FormControl>
 
           <FormControlLabel
             control={

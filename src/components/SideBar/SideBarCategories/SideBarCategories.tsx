@@ -1,62 +1,69 @@
 import { Add } from "@mui/icons-material";
-import { Chip, IconButton, List, ListItemButton, ListItemText, Typography } from "@mui/material";
+import { Chip, List, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import { useState } from "react";
 import AddCategoryDialog from "~components/AddCategoryDialog/AddCategoryDialog";
 import ColoredBox from "~components/ColoredBox/ColoredBox";
 
-export default function SideBarCategories() {
-    const [openCategory, setCategoryOpen] = useState(false);
+type SideBarCategoriesProps = {
+  open: boolean;
+};
 
-    const handleOpenAddCategoryDialog = () => {
-        setCategoryOpen(true);
-    };
+export default function SideBarCategories({ open }: SideBarCategoriesProps) {
+  const [openCategory, setCategoryOpen] = useState(false);
 
-    const handleCloseAddCategoryDialog = () => {
-        setCategoryOpen(false);
-    };
+  const handleOpenAddCategoryDialog = () => {
+    setCategoryOpen(true);
+  };
 
-    return (
-        <>
-            <Typography variant="h6" gutterBottom>
-                Categories
-            </Typography>
-            <List>
-                <ListItemButton onClick={handleOpenAddCategoryDialog}>
-                    <IconButton disableRipple>
-                        <Add sx={{ marginRight: 1 }} />
-                    </IconButton>
-                    <ListItemText primary="Add a category" />
-                </ListItemButton>
-                {/* Existing categories */}
-                <ListItemButton>
-                    <IconButton disableRipple>
-                        <ColoredBox color={"red"} />
-                    </IconButton>
-                    <ListItemText primary="Category 1" />
-                    <IconButton edge="end" disableRipple>
-                        <Chip label="2" size="small" />
-                    </IconButton>
-                </ListItemButton>
-                <ListItemButton>
-                    <IconButton disableRipple>
-                        <ColoredBox color={"blue"} />
-                    </IconButton>
-                    <ListItemText primary="Category 2" />
-                    <IconButton edge="end" disableRipple>
-                        <Chip label="2" size="small" />
-                    </IconButton>
-                </ListItemButton>
-                <ListItemButton>
-                    <IconButton disableRipple>
-                        <ColoredBox color={"green"} />
-                    </IconButton>
-                    <ListItemText primary="Category 3" />
-                    <IconButton edge="end" disableRipple>
-                        <Chip label="2" size="small" />
-                    </IconButton>
-                </ListItemButton>
-            </List>
-            <AddCategoryDialog open={openCategory} onClose={handleCloseAddCategoryDialog} />
-        </>
-    )
+  const handleCloseAddCategoryDialog = () => {
+    setCategoryOpen(false);
+  };
+
+  return (
+    <>
+      <Typography variant="h6" gutterBottom>
+        {open ? 'Categories' : 'Tags'}
+      </Typography>
+      <List>
+        <ListItemButton onClick={handleOpenAddCategoryDialog}>
+          <ListItemIcon>
+              <Add />
+          </ListItemIcon>
+          {open && <ListItemText primary="Add a category" />}
+        </ListItemButton>
+
+        <ListItemButton>
+          <ListItemIcon>
+              <ColoredBox color={"red"} />
+          </ListItemIcon>
+          {open && <ListItemText primary="Category 1" />}
+          {open && (
+              <Chip label="2" size="small" />
+          )}
+        </ListItemButton>
+
+        <ListItemButton>
+          <ListItemIcon>
+              <ColoredBox color={"blue"} />
+          </ListItemIcon>
+          {open && <ListItemText primary="Category 2" />}
+          {open && (
+              <Chip label="2" size="small" />
+          )}
+        </ListItemButton>
+
+        <ListItemButton>
+          <ListItemIcon>
+              <ColoredBox color={"green"} />
+          </ListItemIcon>
+          {open && <ListItemText primary="Category 3" />}
+          {open && (
+              <Chip label="2" size="small" />
+          )}
+        </ListItemButton>
+
+      </List>
+      <AddCategoryDialog open={openCategory} onClose={handleCloseAddCategoryDialog} />
+    </>
+  );
 }

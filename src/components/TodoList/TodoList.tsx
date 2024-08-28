@@ -1,6 +1,6 @@
-import { Box, List } from '@mui/material'
-import TodoItem from './TodoItem/TodoItem';
+import { Box, List } from '@mui/material';
 import { Task } from '~/types/task';
+import TodoItem from './TodoItem/TodoItem';
 type TodoListProps = {
   tasks:Task[],
 }

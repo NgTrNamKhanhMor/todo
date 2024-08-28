@@ -1,5 +1,5 @@
-import { Box, TextField, Button, Typography, Paper, Avatar } from '@mui/material';
 import { LockOutlined } from '@mui/icons-material';
+import { Avatar, Box, Button, Paper, TextField, Typography } from '@mui/material';
 type RegisterProps = {
   handleSwitch: ()=> void,
 }
