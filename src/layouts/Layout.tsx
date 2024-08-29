@@ -14,7 +14,7 @@ const defaultTaskContext: TaskContextType = {
 };
 export const TaskContext = createContext<TaskContextType>(defaultTaskContext);
 
-export default function Home() {
+export default function Layout() {
   const [sideBarOpen, setSideBarOpen] = useState(true);
   const [rightBarOpen, setRightBarOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<selectedTask>(null);

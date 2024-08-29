@@ -18,13 +18,14 @@ const router = createBrowserRouter(
       <Route path="/" element={<Layout />}>
         <Route index element={<Main />} />
       </Route>
-      
-      <Route path="*" element={<NotFound />}/>
 
       <Route element={<Auth />}>
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
       </Route>
+
+      <Route path="*" element={<NotFound />} />
+
     </>
   )
 );

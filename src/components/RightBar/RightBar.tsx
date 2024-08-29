@@ -1,49 +1,76 @@
 import { Close } from '@mui/icons-material';
-import { Box, Button, Checkbox, Drawer, FormControl, FormControlLabel, IconButton, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
+import {
+  Box, Button, Checkbox, Drawer, FormControl, FormControlLabel, IconButton,
+  InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Typography, useMediaQuery, useTheme
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Task } from '~/types/task';
 import DeleteDialog from '~components/DeleteDialog/DeleteDialog';
+
 type RightBarProps = {
   open: boolean,
   closeRightBar: () => void,
   selectedTask: Task | null,
-}
+};
+
 export default function RightBar({ open, closeRightBar, selectedTask }: RightBarProps) {
   const theme = useTheme();
   const drawerWidth = 400;
   const collapsedWidth = 150;
 
-  const [dueDateEnabled, setDueDateEnabled] = useState(false);
-  const [taskName, setTaskName] = useState('');
-  const [taskDescription, setTaskDescription] = useState('');
-  const [taskCategory, setTaskCategory] = useState('');
-  const [taskDate, setTaskDate] = useState('');
-  const [header, setHeader] = useState('');
+  const [task, setTask] = useState({
+    name: '',
+    description: '',
+    category: '',
+    date: '',
+  });
 
+  const [header, setHeader] = useState('');
+  const [dueDateEnabled, setDueDateEnabled] = useState(false);
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
 
   useEffect(() => {
     if (selectedTask) {
-      setTaskName(selectedTask.name);
-      setTaskDescription(selectedTask.description);
-      setTaskCategory(selectedTask.category);
-      setTaskDate(selectedTask.date);
+      setTask({
+        name: selectedTask.name,
+        description: selectedTask.description,
+        category: selectedTask.category,
+        date: selectedTask.date,
+      });
       setDueDateEnabled(!!selectedTask.date);
-      setHeader("Edit Task")
+      setHeader("Edit Task");
     } else {
-      setTaskName('');
-      setTaskDescription('');
-      setTaskCategory('');
-      setTaskDate('');
+      setTask({
+        name: '',
+        description: '',
+        category: '',
+        date: '',
+      });
       setDueDateEnabled(false);
-      setHeader("Add Task")
+      setHeader("Add Task");
     }
   }, [selectedTask]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
+    const { name, value } = e.target as HTMLInputElement | HTMLTextAreaElement;
+
+    setTask(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleSelectChange = (event: SelectChangeEvent<string>) => {
+    const { name, value } = event.target;
+    setTask(prevState => ({
+      ...prevState,
+      [name!]: value,
+    }));
+  };
+
   const handleDueDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDueDateEnabled(event.target.checked);
-    if (!event.target.checked) {
-      setTaskDate('');
-    }
+    const isChecked = event.target.checked;
+    setDueDateEnabled(isChecked);
   };
 
   const [openDeleteTask, setDeleteTaskOpen] = useState(false);
@@ -57,7 +84,9 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
   };
 
   const handleSaveTask = () => {
+    // Add logic to save the task
   };
+
   return (
     <Drawer
       variant={isLargeScreen ? 'persistent' : 'temporary'}
@@ -110,20 +139,22 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
 
           <TextField
             label="Task Name"
+            name="name"
             variant="outlined"
             size="small"
             fullWidth
-            value={taskName}
-            onChange={(e) => setTaskName(e.target.value)}
+            value={task.name}
+            onChange={handleInputChange}
           />
 
           <TextField
             label="Task Description"
+            name="description"
             variant="outlined"
             size="small"
             multiline
-            value={taskDescription}
-            onChange={(e) => setTaskDescription(e.target.value)}
+            value={task.description}
+            onChange={handleInputChange}
             rows={3}
             fullWidth
           />
@@ -132,8 +163,9 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
             <InputLabel id="task-category-label">Task Category</InputLabel>
             <Select
               labelId="task-category-label"
-              value={taskCategory}
-              onChange={(e) => setTaskCategory(e.target.value)}
+              name="category"
+              value={task.category}
+              onChange={handleSelectChange}
               label="Task Category"
             >
               <MenuItem value="" disabled>
@@ -154,11 +186,12 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
 
           <TextField
             label="Due Date"
+            name="date"
             type="date"
             variant="outlined"
             size="small"
-            value={taskDate}
-            onChange={(e) => setTaskDate(e.target.value)}
+            value={task.date}
+            onChange={handleInputChange}
             fullWidth
             disabled={!dueDateEnabled}
             InputLabelProps={{ shrink: true }}
