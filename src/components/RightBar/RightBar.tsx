@@ -64,7 +64,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
       anchor="right"
       open={open}
       sx={{
-        width: open ? drawerWidth : {xxs: 0 , lg: collapsedWidth},
+        width: open ? drawerWidth : { xxs: 0, lg: collapsedWidth },
         '& .MuiDrawer-paper': {
           width: open ? drawerWidth : collapsedWidth,
           height: '100%',
@@ -82,14 +82,14 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
         },
       }}
     >
-      <Box bgcolor='rgb(244,244,244)' 
+      <Box bgcolor='rgb(244,244,244)'
         m={4}
         py={4}
-        px={open ? 4 : 2} 
-        display='flex' 
-        height= {1}
-        flexDirection='column' 
-        justifyContent='space-between' 
+        px={open ? 4 : 2}
+        display='flex'
+        height={1}
+        flexDirection='column'
+        justifyContent='space-between'
         borderRadius={4}
         sx={{
           transition: theme.transitions.create('width', {
@@ -97,7 +97,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
             duration: theme.transitions.duration.standard,
           })
         }}
-        >
+      >
         <Box display='flex' flexDirection='column' gap={2}>
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
             <Typography variant="h5" textTransform="uppercase">

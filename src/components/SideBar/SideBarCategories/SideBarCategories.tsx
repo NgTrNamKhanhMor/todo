@@ -1,16 +1,22 @@
 import { Add } from "@mui/icons-material";
-import { Chip, List, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
+import {
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import AddCategoryDialog from "~components/AddCategoryDialog/AddCategoryDialog";
-import ColoredBox from "~components/ColoredBox/ColoredBox";
-
+import SideBarCategoryItem from "~components/SideBar/SideBarCategories/SideBarCategoryItem/SideBarCategoryItem";
+import categoriesData from "~data/category.json";
 type SideBarCategoriesProps = {
   open: boolean;
 };
 
 export default function SideBarCategories({ open }: SideBarCategoriesProps) {
   const [openCategory, setCategoryOpen] = useState(false);
-
+  const [categories, setCategories] = useState(categoriesData);
   const handleOpenAddCategoryDialog = () => {
     setCategoryOpen(true);
   };
@@ -21,49 +27,29 @@ export default function SideBarCategories({ open }: SideBarCategoriesProps) {
 
   return (
     <>
-      <Typography variant="h6" gutterBottom textAlign={open? 'start': 'center'}>
-        {open ? 'Categories' : 'Tags'}
+      <Typography
+        variant="h6"
+        gutterBottom
+        textAlign={open ? "start" : "center"}
+      >
+        {open ? "Categories" : "Tags"}
       </Typography>
       <List>
         <ListItemButton onClick={handleOpenAddCategoryDialog}>
           <ListItemIcon>
-              <Add />
+            <Add />
           </ListItemIcon>
           {open && <ListItemText primary="Add a category" />}
         </ListItemButton>
 
-        <ListItemButton alignItems="center">
-          <ListItemIcon>
-              <ColoredBox color={"red"} />
-          </ListItemIcon>
-          {open && <ListItemText primary="Category 1" />}
-          {open && (
-              <Chip label="2" size="small" />
-          )}
-        </ListItemButton>
-
-        <ListItemButton>
-          <ListItemIcon>
-              <ColoredBox color={"blue"} />
-          </ListItemIcon>
-          {open && <ListItemText primary="Category 2" />}
-          {open && (
-              <Chip label="2" size="small" />
-          )}
-        </ListItemButton>
-
-        <ListItemButton>
-          <ListItemIcon>
-              <ColoredBox color={"green"} />
-          </ListItemIcon>
-          {open && <ListItemText primary="Category 3" />}
-          {open && (
-              <Chip label="2" size="small" />
-          )}
-        </ListItemButton>
-
+        {categories.map((category, index) => (
+          <SideBarCategoryItem key={index} open={open} category={category} />
+        ))}
       </List>
-      <AddCategoryDialog open={openCategory} onClose={handleCloseAddCategoryDialog} />
+      <AddCategoryDialog
+        open={openCategory}
+        onClose={handleCloseAddCategoryDialog}
+      />
     </>
   );
 }

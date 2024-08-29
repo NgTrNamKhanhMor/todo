@@ -1,14 +1,20 @@
-import { ArrowForwardIos } from '@mui/icons-material';
-import { Box, Checkbox, Divider, IconButton, ListItem, Typography } from '@mui/material';
-import { useContext } from 'react';
-import { Task } from '~/types/task';
-import { TaskContext } from '~components/Home/Home';
+import { ArrowForwardIos } from "@mui/icons-material";
+import {
+  Box,
+  Checkbox,
+  Divider,
+  IconButton,
+  ListItem,
+  Typography,
+} from "@mui/material";
+import { useContext } from "react";
+import { TaskContext } from "~/layouts/Layout";
+import { Task } from "~/types/task";
 type TodoItemProps = {
-  task:Task,
-}
-export default function TodoItem({task}: TodoItemProps) {
-
-  const {openRightBar} = useContext(TaskContext);
+  task: Task;
+};
+export default function TodoItem({ task }: TodoItemProps) {
+  const { openRightBar } = useContext(TaskContext);
 
   return (
     <>
@@ -25,11 +31,11 @@ export default function TodoItem({task}: TodoItemProps) {
             </Typography>
           </Box>
         </Box>
-        <IconButton onClick={()=>openRightBar(task)}>
-          <ArrowForwardIos/>
+        <IconButton onClick={() => openRightBar(task)}>
+          <ArrowForwardIos />
         </IconButton>
       </ListItem>
       <Divider />
     </>
-  )
+  );
 }
