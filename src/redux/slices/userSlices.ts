@@ -42,7 +42,7 @@ export const register = createAsyncThunk(
             throw new Error('User already exists');
         } else {
             const newUser: User = {
-                id: users.length + 1, 
+                id: users.length + 1,
                 ...userDetails
             };
             users.push(newUser);
@@ -68,6 +68,7 @@ const userSlice = createSlice({
             })
             .addCase(login.fulfilled, (state, action) => {
                 state.status = 'succeeded';
+                state.error = '';
                 state.currentUser = action.payload;
             })
             .addCase(login.rejected, (state, action) => {
@@ -79,6 +80,7 @@ const userSlice = createSlice({
             })
             .addCase(register.fulfilled, (state, action) => {
                 state.status = 'succeeded';
+                state.error = '';
                 state.currentUser = action.payload;
             })
             .addCase(register.rejected, (state, action) => {
