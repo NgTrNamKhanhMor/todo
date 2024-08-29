@@ -9,11 +9,12 @@ import {
 import Auth from "~/layouts/Authentication";
 import Layout from "~/layouts/Layout";
 import Main from "~/pages/Main";
-import { store } from "~redux/store";
+import { persistor, store } from "~redux/store";
 import ProtectedRoute from "./guard/ProtectedRoute";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
+import { PersistGate } from "redux-persist/integration/react";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -39,7 +40,9 @@ function App() {
     <>
       <CssBaseline />
       <Provider store={store}>
-        <RouterProvider router={router} />
+        <PersistGate loading={null} persistor={persistor}>
+          <RouterProvider router={router} />
+        </PersistGate>
       </Provider>
     </>
   );
