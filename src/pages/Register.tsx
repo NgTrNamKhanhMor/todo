@@ -1,10 +1,9 @@
 import { LockOutlined } from "@mui/icons-material";
 import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
-import { StyledPaper } from "~components/Authentication/Paper/Paper.style";
-type RegisterProps = {
-  handleSwitch: () => void;
-};
-export default function Register({ handleSwitch }: RegisterProps) {
+import { Link } from "react-router-dom";
+import { StyledPaper } from "~/styles/Paper.style";
+
+export default function Register() {
   return (
     <StyledPaper>
       <Avatar sx={{ mx: "auto", bgcolor: "primary" }}>
@@ -67,9 +66,11 @@ export default function Register({ handleSwitch }: RegisterProps) {
       <Box mt={2}>
         <Typography variant="body2">
           Already have an account?{" "}
-          <Button variant="text" onClick={handleSwitch} color="primary">
-            Login
-          </Button>
+          <Link to='/login'>
+            <Button variant="text" color="primary">
+              Login
+            </Button>
+          </Link>
         </Typography>
       </Box>
     </StyledPaper>

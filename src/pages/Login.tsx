@@ -6,14 +6,13 @@ import {
   TextField,
   Typography
 } from "@mui/material";
-import { StyledPaper } from "~components/Authentication/Paper/Paper.style";
-type LoginProps = {
-  handleSwitch: ()=> void,
-}
-export default function Login({ handleSwitch }: LoginProps) {
+import { Link } from "react-router-dom";
+import { StyledPaper } from "~/styles/Paper.style";
+
+export default function Login() {
   return (
     <StyledPaper>
-      <Avatar sx={{ mx: 'auto', bgcolor: "primary"}}>
+      <Avatar sx={{ mx: 'auto', bgcolor: "primary" }}>
         <LockOutlined />
       </Avatar>
       <Typography component="h1" variant="h5" mb={2}>
@@ -63,9 +62,11 @@ export default function Login({ handleSwitch }: LoginProps) {
       <Box mt={2}>
         <Typography variant="body2">
           Don't have an account?{" "}
-          <Button variant="text" onClick={handleSwitch} color="primary">
-            Register
-          </Button>
+          <Link to='/register'>
+            <Button variant="text" color="primary">
+              Register
+            </Button>
+          </Link>
         </Typography>
       </Box>
     </StyledPaper>

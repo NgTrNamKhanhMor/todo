@@ -105,6 +105,15 @@
       ],
       "~data/*": [
         "src/data/*"
+      ],
+      "~layouts/*": [
+        "src/layouts/*"
+      ],
+      "~pages/*": [
+        "src/pages/*"
+      ],
+      "~styles/*": [
+        "src/styles/*"
       ]
     }
   }

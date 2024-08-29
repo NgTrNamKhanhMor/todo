@@ -4,10 +4,10 @@ import {
   useTheme
 } from "@mui/material";
 import { useContext, useState } from "react";
-import { TaskContext } from "~components/Home/Home";
+import { TaskContext } from "~/layouts/Layout";
 import TodoList from "~components/TodoList/TodoList";
 import tasksData from '~data/tasks.json';
-import MainHeader from "./MainHeader/MainHeader";
+import MainHeader from "../components/MainHeader/MainHeader";
 
 export default function Main() {
   const { openRightBar } = useContext(TaskContext);
