@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User } from "~/types/user";
-import userData from '~data/users.json';
 
 
 interface UserState {
@@ -9,7 +8,7 @@ interface UserState {
     error: string | null;
 }
 
-const users: User[] = userData;
+const users: User[] = [];
 
 const initialState: UserState = {
     currentUser: null,
@@ -20,6 +19,7 @@ const initialState: UserState = {
 export const login = createAsyncThunk(
     'user/login',
     async (userCredentials: { email: string; password: string }) => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         const user = users.find(
             (user: User) =>
                 user.email === userCredentials.email &&
@@ -37,6 +37,7 @@ export const register = createAsyncThunk(
     'user/register',
     async (userDetails: { name: string; email: string; password: string }) => {
         const userExists = users.some((user: User) => user.email === userDetails.email);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         if (userExists) {
             throw new Error('User already exists');
         } else {
