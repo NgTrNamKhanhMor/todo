@@ -1,13 +1,13 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
 import { LockOutlined } from "@mui/icons-material";
-import { StyledPaper } from "~/styles/Paper.style";
-import { Link, useNavigate } from "react-router-dom";
-import { login } from "~redux/slices/userSlices";
-import { AppDispatch, RootState } from "~redux/store";
+import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import * as Yup from "yup";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { StyledPaper } from "~/styles/Paper.style";
 import { validationSchema } from "~helpers/authValidation";
+import { login, resetError } from "~redux/slices/userSlices";
+import { AppDispatch, RootState } from "~redux/store";
 
 export default function Login() {
   const dispatch = useDispatch<AppDispatch>();
@@ -15,6 +15,10 @@ export default function Login() {
   const { currentUser, status, error } = useSelector(
     (state: RootState) => state.user
   );
+
+  useEffect(() => {
+    dispatch(resetError())
+  }, [])
 
   const formik = useFormik({
     initialValues: {

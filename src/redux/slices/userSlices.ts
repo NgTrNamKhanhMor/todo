@@ -1,32 +1,27 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { User } from "~/types/user";
-
-
-interface UserState {
-    currentUser: User | null;
-    status: 'idle' | 'loading' | 'succeeded' | 'failed';
-    error: string | null;
-}
-
-const users: User[] = [];
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { User, UserState } from "~/types/user";
 
 const initialState: UserState = {
+    users: [],
     currentUser: null,
     status: 'idle',
     error: null,
 };
 
+// Thunks
 export const login = createAsyncThunk(
     'user/login',
-    async (userCredentials: { email: string; password: string }) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const user = users.find(
-            (user: User) =>
-                user.email === userCredentials.email &&
-                user.password === userCredentials.password
-        );
-        if (user) {
-            return user;
+    async (userCredentials: { email: string; password: string }, { getState }) => {
+        const state = getState() as { user: UserState };
+        if (state.user.users) {
+            const user = state.user.users.find(
+                (user) => user.email === userCredentials.email && user.password === userCredentials.password
+            );
+            if (user) {
+                return user;
+            } else {
+                throw new Error('Wrong email or password');
+            }
         } else {
             throw new Error('Wrong email or password');
         }
@@ -35,22 +30,23 @@ export const login = createAsyncThunk(
 
 export const register = createAsyncThunk(
     'user/register',
-    async (userDetails: { name: string; email: string; password: string }) => {
-        const userExists = users.some((user: User) => user.email === userDetails.email);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+    async (userDetails: { name: string; email: string; password: string }, { getState }) => {
+        const state = getState() as { user: UserState };
+        const userExists = state.user.users?.some((user) => user.email === userDetails.email);
+
         if (userExists) {
             throw new Error('User already exists');
         } else {
             const newUser: User = {
-                id: users.length + 1,
-                ...userDetails
+                id: state.user.users ? state.user.users.length + 1 : 1,
+                ...userDetails,
             };
-            users.push(newUser);
             return newUser;
         }
     }
 );
 
+// Slice
 const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -60,15 +56,19 @@ const userSlice = createSlice({
             state.status = 'idle';
             state.error = null;
         },
+        resetError: (state) => {
+            state.status = 'idle';
+            state.error = null;
+        },
     },
     extraReducers: (builder) => {
         builder
             .addCase(login.pending, (state) => {
                 state.status = 'loading';
+                state.error = null;
             })
             .addCase(login.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.error = '';
                 state.currentUser = action.payload;
             })
             .addCase(login.rejected, (state, action) => {
@@ -77,10 +77,11 @@ const userSlice = createSlice({
             })
             .addCase(register.pending, (state) => {
                 state.status = 'loading';
+                state.error = null;
             })
-            .addCase(register.fulfilled, (state, action) => {
+            .addCase(register.fulfilled, (state, action: PayloadAction<User>) => {
                 state.status = 'succeeded';
-                state.error = '';
+                state.users?.push(action.payload);
                 state.currentUser = action.payload;
             })
             .addCase(register.rejected, (state, action) => {
@@ -90,6 +91,6 @@ const userSlice = createSlice({
     },
 });
 
-export const { logout } = userSlice.actions;
+export const { logout, resetError } = userSlice.actions;
 
 export default userSlice.reducer;

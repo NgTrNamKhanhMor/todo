@@ -1,25 +1,29 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
 import { LockOutlined } from "@mui/icons-material";
-import { StyledPaper } from "~/styles/Paper.style";
-import { Link, useNavigate } from 'react-router-dom';
-import { AppDispatch, RootState } from '~redux/store';
-import { register } from '~redux/slices/userSlices';
+import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
 import { useFormik } from 'formik';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { StyledPaper } from "~/styles/Paper.style";
 import { registerValidationSchema } from '~helpers/authValidation';
+import { register, resetError } from '~redux/slices/userSlices';
+import { AppDispatch, RootState } from '~redux/store';
 
 export default function Register() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { status, error } = useSelector((state: RootState) => state.user);
 
+  useEffect(() => {
+    dispatch(resetError())
+  }, [])
   const formik = useFormik({
     initialValues: {
       name: '',
       email: '',
       password: '',
     },
-    validationSchema : registerValidationSchema, 
+    validationSchema: registerValidationSchema,
     onSubmit: (values, { setSubmitting }) => {
       dispatch(register(values))
         .unwrap()

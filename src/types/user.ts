@@ -4,3 +4,10 @@ export interface User {
     email: string;
     password: string;
 }
+
+export interface UserState {
+    users: User[] | null, 
+    currentUser: User | null;
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    error: string | null;
+}
