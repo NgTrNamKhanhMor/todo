@@ -1,74 +1,102 @@
-import { Logout, Menu, Search } from '@mui/icons-material';
-import { Box, Button, Divider, Drawer, IconButton, ListItem, ListItemIcon, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
-import SideBarCategories from './SideBarCategories/SideBarCategories';
-import SideBarTasks from './SideBarTasks/SideBarTasks';
+import { Logout, Menu, Search } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Divider,
+  Drawer,
+  IconButton,
+  ListItem,
+  ListItemIcon,
+  TextField,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout } from "~redux/slices/userSlices";
+import SideBarCategories from "./SideBarCategories/SideBarCategories";
+import SideBarTasks from "./SideBarTasks/SideBarTasks";
 
 type SideBarProps = {
-  open: boolean,
-  toggleDrawer: () => void,
-}
+  open: boolean;
+  toggleDrawer: () => void;
+};
 
 export default function SideBar({ open, toggleDrawer }: SideBarProps) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const theme = useTheme();
   const drawerWidth = 400;
   const collapsedWidth = 150;
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
+
   return (
     <>
-      {!isLargeScreen && (
-          <Menu onClick={toggleDrawer} sx={{mt: 7, mx: 4}}/>
-      )}
+      {!isLargeScreen && <Menu onClick={toggleDrawer} sx={{ mt: 7, mx: 4 }} />}
       <Drawer
-        variant={isLargeScreen ? 'permanent' : 'temporary'}
+        variant={isLargeScreen ? "permanent" : "temporary"}
         anchor="left"
         open={open}
         sx={{
           width: open ? drawerWidth : collapsedWidth,
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: open ? drawerWidth : collapsedWidth,
-            transition: theme.transitions.create('width', {
+            transition: theme.transitions.create("width", {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.standard,
             }),
-            overflowX: 'hidden',
-            display: 'flex',
-            height: '100%',
-            flexDirection: 'column',
-            bgcolor: 'transparent',
-            border: 'none',
-            boxShadow: 'none',
-            justifyContent: 'space-between',
+            overflowX: "hidden",
+            display: "flex",
+            height: "100%",
+            flexDirection: "column",
+            bgcolor: "transparent",
+            border: "none",
+            boxShadow: "none",
+            justifyContent: "space-between",
           },
         }}
       >
         <Box
-          bgcolor='rgb(244,244,244)'
+          bgcolor="rgb(244,244,244)"
           m={4}
           py={4}
           px={open ? 4 : 2}
           height="100%"
-          display='flex'
-          flexDirection='column'
-          justifyContent='space-between'
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
           borderRadius={4}
           sx={{
-            transition: theme.transitions.create('width', {
+            transition: theme.transitions.create("width", {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.standard,
-            })
+            }),
           }}
         >
           <Box>
-            <Box display="flex" alignItems="center" justifyContent={open ? 'space-between' : 'center'} mb={2}>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent={open ? "space-between" : "center"}
+              mb={2}
+            >
               {open && (
-                <Typography variant="h5" textTransform='uppercase'>Menu</Typography>
+                <Typography variant="h5" textTransform="uppercase">
+                  Menu
+                </Typography>
               )}
               <IconButton size="small" onClick={toggleDrawer}>
                 <Menu />
               </IconButton>
             </Box>
             <ListItem>
-              <ListItemIcon onClick={open ? () => {} : toggleDrawer}>
+              <ListItemIcon onClick={open ? () => { } : toggleDrawer}>
                 <Search />
               </ListItemIcon>
               {open && (
@@ -81,7 +109,6 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
               )}
             </ListItem>
 
-
             <SideBarTasks open={open} />
             <Divider sx={{ my: 3 }} />
             <SideBarCategories open={open} />
@@ -89,7 +116,12 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
 
           {open && (
             <Box>
-              <Button variant="outlined" color="secondary" startIcon={<Logout />}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                startIcon={<Logout />}
+                onClick={handleLogout}
+              >
                 Log Out
               </Button>
             </Box>
@@ -97,6 +129,5 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
         </Box>
       </Drawer>
     </>
-
   );
 }

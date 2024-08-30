@@ -114,6 +114,9 @@
       ],
       "~styles/*": [
         "src/styles/*"
+      ],
+      "~guard/*": [
+        "src/guard/*"
       ]
     }
   }

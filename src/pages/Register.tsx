@@ -1,12 +1,44 @@
 import { LockOutlined } from "@mui/icons-material";
 import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useFormik } from 'formik';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import { StyledPaper } from "~/styles/Paper.style";
+import { registerValidationSchema } from '~helpers/authValidation';
+import { register, resetError } from '~redux/slices/userSlices';
+import { AppDispatch, RootState } from '~redux/store';
 
 export default function Register() {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const { status, error } = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    dispatch(resetError())
+  }, [])
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      email: '',
+      password: '',
+    },
+    validationSchema: registerValidationSchema,
+    onSubmit: (values, { setSubmitting }) => {
+      dispatch(register(values))
+        .unwrap()
+        .then(() => {
+          navigate('/');
+        })
+        .catch(() => {
+          setSubmitting(false);
+        });
+    },
+  });
+
   return (
     <StyledPaper>
-      <Avatar sx={{ mx: "auto", bgcolor: "primary" }}>
+      <Avatar sx={{ mx: "auto", bgcolor: "primary.main" }}>
         <LockOutlined />
       </Avatar>
       <Typography component="h1" variant="h5" mb={2}>
@@ -20,38 +52,51 @@ export default function Register() {
           gap: 3,
         }}
         noValidate
+        onSubmit={formik.handleSubmit}
       >
         <TextField
           variant="outlined"
           margin="normal"
-          required
           fullWidth
           id="name"
           label="Full Name"
           name="name"
           autoComplete="name"
           autoFocus
+          value={formik.values.name}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.name && Boolean(formik.errors.name)}
+          helperText={formik.touched.name && formik.errors.name}
         />
         <TextField
           variant="outlined"
           margin="normal"
-          required
           fullWidth
           id="email"
           label="Email Address"
           name="email"
           autoComplete="email"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.email && Boolean(formik.errors.email)}
+          helperText={formik.touched.email && formik.errors.email}
         />
         <TextField
           variant="outlined"
           margin="normal"
-          required
           fullWidth
           name="password"
           label="Password"
           type="password"
           id="password"
           autoComplete="new-password"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.password && Boolean(formik.errors.password)}
+          helperText={formik.touched.password && formik.errors.password}
         />
         <Button
           type="submit"
@@ -59,9 +104,11 @@ export default function Register() {
           variant="contained"
           color="primary"
           sx={{ mt: 2 }}
+          disabled={status === 'loading' || formik.isSubmitting}
         >
-          Registers
+          Register
         </Button>
+        {error && <Typography color="error">{error}</Typography>}
       </Box>
       <Box mt={2}>
         <Typography variant="body2">
