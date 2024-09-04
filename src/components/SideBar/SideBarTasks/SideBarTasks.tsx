@@ -34,10 +34,10 @@ export default function SideBarTasks({ open }: SideBarTasksProps) {
   };
 
   const handleFilterToday = () => {
-    setSearchParams({ date: 'today', page: "1" });
+    setSearchParams({ date: 'today' });
   };
   const handleFilterUpcoming = () => {
-    setSearchParams({ date: 'upcoming', page: "1" });
+    setSearchParams({ date: 'upcoming' });
   };
 
   const todayTasksCount = getTodayTasksCount();

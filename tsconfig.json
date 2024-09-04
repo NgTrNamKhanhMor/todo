@@ -85,22 +85,54 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "paths": {
-      "~assets/*": ["src/assets/*"],
-      "~components/*": ["src/components/*"],
-      "~helpers/*": ["src/helpers/*"],
-      "~redux/*": ["src/redux/*"],
-      "~/*": ["src/*"],
-      "~types/*": ["src/types/*"],
-      "~data/*": ["src/data/*"],
-      "~layouts/*": ["src/layouts/*"],
-      "~pages/*": ["src/pages/*"],
-      "~styles/*": ["src/styles/*"],
-      "~guard/*": ["src/guard/*"],
-      "~Filters/*": ["src/components/Filters/*"],
-      "~DatePicker/*": ["src/components/DatePicker/*"],
-      "~MyDatePicker/*": ["src/components/MyDatePicker/*"],
-      "~ControlPanels/*": ["src/components/ControlPanel/*"],
-      "~ControlPanel/*": ["src/components/ControlPanel/*"]
+      "~assets/*": [
+        "src/assets/*"
+      ],
+      "~components/*": [
+        "src/components/*"
+      ],
+      "~helpers/*": [
+        "src/helpers/*"
+      ],
+      "~redux/*": [
+        "src/redux/*"
+      ],
+      "~/*": [
+        "src/*"
+      ],
+      "~types/*": [
+        "src/types/*"
+      ],
+      "~data/*": [
+        "src/data/*"
+      ],
+      "~layouts/*": [
+        "src/layouts/*"
+      ],
+      "~pages/*": [
+        "src/pages/*"
+      ],
+      "~styles/*": [
+        "src/styles/*"
+      ],
+      "~guard/*": [
+        "src/guard/*"
+      ],
+      "~Filters/*": [
+        "src/components/Filters/*"
+      ],
+      "~DatePicker/*": [
+        "src/components/DatePicker/*"
+      ],
+      "~MyDatePicker/*": [
+        "src/components/MyDatePicker/*"
+      ],
+      "~ControlPanels/*": [
+        "src/components/ControlPanel/*"
+      ],
+      "~ControlPanel/*": [
+        "src/components/ControlPanel/*"
+      ]
     }
   }
 }

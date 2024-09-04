@@ -1,14 +1,12 @@
 import { Box, Pagination, useTheme } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { TaskContext } from "~/layouts/Layout";
 import ControlPanel from "~components/ControlPanel/ControlPanel";
 import TodoList from "~components/TodoList/TodoList";
 import tasksData from "~data/tasks.json";
 import MainHeader from "../components/MainHeader/MainHeader";
 
 export default function Main() {
-  const { openRightBar } = useContext(TaskContext);
   const [tasks, setTasks] = useState(tasksData);
   const [filteredTotal, setFilteredTotal] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -87,10 +85,7 @@ export default function Main() {
     setFilteredTotal(filteredTasks.length);
     setCurrentPage(validPage);
 
-    const params = new URLSearchParams();
-    if (searchQuery) params.set("search", searchQuery);
-    if (filterQuery) params.set("filter", filterQuery);
-    if (dateQuery) params.set("date", dateQuery);
+    const params = new URLSearchParams(searchParams);
     params.set("page", validPage.toString());
     setSearchParams(params);
   }, [searchQuery, filterQuery, dateQuery, pageQuery]);
