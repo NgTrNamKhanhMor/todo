@@ -1,18 +1,18 @@
 import { Box, List } from '@mui/material';
-import { Task } from '~/types/task';
+import { Todo } from '~/types/todo';
 import TodoItem from '~components/TodoList/TodoItem/TodoItem';
 type TodoListProps = {
-  tasks:Task[],
+  tasks: Todo[],
 }
-export default function TodoList({tasks}: TodoListProps) {
- 
+export default function TodoList({ tasks }: TodoListProps) {
+
   return (
     <List sx={{ flexGrow: 1, width: 1 }}>
-    {tasks.map((task) => (
-      <Box key={task.id}>
-       <TodoItem task={task}/>
-      </Box>
-    ))}
-  </List>
+      {tasks.map((task) => (
+        <Box key={task.id}>
+          <TodoItem task={task} />
+        </Box>
+      ))}
+    </List>
   )
 }

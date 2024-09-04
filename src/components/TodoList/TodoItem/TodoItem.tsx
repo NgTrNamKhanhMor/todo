@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import { useContext } from "react";
 import { TaskContext } from "~/layouts/Layout";
-import { Task } from "~/types/task";
+import { Todo } from "~/types/todo";
 type TodoItemProps = {
-  task: Task;
+  task: Todo;
 };
 export default function TodoItem({ task }: TodoItemProps) {
   const { openRightBar } = useContext(TaskContext);
@@ -20,7 +20,7 @@ export default function TodoItem({ task }: TodoItemProps) {
     <>
       <ListItem>
         <Box display="flex" alignItems="center" width={1}>
-          <Checkbox sx={{ marginRight: 2 }} />
+          <Checkbox sx={{ marginRight: 2 }} checked={task.completed} />
           <Box display="flex" flexDirection="column" flexGrow={1}>
             <Typography variant="h6">{task.name}</Typography>
             <Typography variant="body2" color="text.secondary">

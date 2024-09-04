@@ -17,8 +17,8 @@ export default function Login() {
   );
 
   useEffect(() => {
-    dispatch(resetError())
-  }, [])
+    dispatch(resetError());
+  }, []);
 
   const formik = useFormik({
     initialValues: {
