@@ -16,7 +16,7 @@ type SideBarCategoriesProps = {
 
 export default function SideBarCategories({ open }: SideBarCategoriesProps) {
   const [openCategory, setCategoryOpen] = useState(false);
-  const [categories, setCategories] = useState(categoriesData);
+
   const handleOpenAddCategoryDialog = () => {
     setCategoryOpen(true);
   };
@@ -42,7 +42,7 @@ export default function SideBarCategories({ open }: SideBarCategoriesProps) {
           {open && <ListItemText primary="Add a category" />}
         </ListItemButton>
 
-        {categories.map((category, index) => (
+        {categoriesData.map((category, index) => (
           <SideBarCategoryItem key={index} open={open} category={category} />
         ))}
       </List>
