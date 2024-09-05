@@ -97,14 +97,18 @@ export function filterTasksByDate(
 }
 export function paginateTasks(
   tasks: Todo[],
-  pageQuery: number,
+  pageQuery: number | string,
   currentPage: number,
   searchParams: URLSearchParams,
   setCurrentPage: (page: number) => void,
   setSearchParams: (params: URLSearchParams) => void
 ) {
+  const parsedPageQuery = parseInt(pageQuery as string, 10);
+  const isValidPageQuery = !isNaN(parsedPageQuery) && parsedPageQuery > 0;
+  const validPageQuery = isValidPageQuery ? parsedPageQuery : 1;
+
   const totalPages = Math.ceil(tasks.length / ITEMSPERPAGE);
-  const validPage = Math.max(1, Math.min(pageQuery, totalPages));
+  const validPage = Math.max(1, Math.min(validPageQuery, totalPages));
 
   const paginatedTasks = tasks.slice(
     (validPage - 1) * ITEMSPERPAGE,
@@ -116,7 +120,8 @@ export function paginateTasks(
     validPage,
     searchParams,
     setCurrentPage,
-    setSearchParams
+    setSearchParams,
+    isValidPageQuery
   );
 
   return { paginatedTasks, validPage };
@@ -127,12 +132,15 @@ function updatePageIfNeeded(
   validPage: number,
   searchParams: URLSearchParams,
   setCurrentPage: (page: number) => void,
-  setSearchParams: (params: URLSearchParams) => void
+  setSearchParams: (params: URLSearchParams) => void,
+  isValidPageQuery: boolean
 ) {
-  if (currentPage !== validPage) {
+  if (currentPage !== validPage || !isValidPageQuery) {
     setCurrentPage(validPage);
     const params = new URLSearchParams(searchParams);
     params.set("page", validPage.toString());
     setSearchParams(params);
   }
 }
+
+
