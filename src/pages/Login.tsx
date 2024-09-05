@@ -12,7 +12,7 @@ import { AppDispatch, RootState } from "~redux/store";
 export default function Login() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { currentUser, status, error } = useSelector(
+  const { status, error } = useSelector(
     (state: RootState) => state.user
   );
 

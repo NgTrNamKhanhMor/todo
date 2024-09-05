@@ -1,6 +1,8 @@
 import { Box } from "@mui/material";
-
-export default function TaskCount({ tasksCount }) {
+type TaskCountProps = {
+  tasksCount: number;
+};
+export default function TaskCount({ tasksCount }: TaskCountProps) {
   return (
     <Box
       sx={{
