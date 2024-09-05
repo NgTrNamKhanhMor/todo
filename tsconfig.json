@@ -132,6 +132,12 @@
       ],
       "~ControlPanel/*": [
         "src/components/ControlPanel/*"
+      ],
+      "~const/*": [
+        "src/const/*"
+      ],
+      "~TodoListSkeleton/*": [
+        "src/components/TodoListSkeleton/*"
       ]
     }
   }

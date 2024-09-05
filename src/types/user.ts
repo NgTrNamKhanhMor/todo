@@ -7,7 +7,7 @@ export interface User {
 
 export interface UserState {
     users: User[] | null, 
-    currentUser: User | null;
+    currentUserId: number | null;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
 }

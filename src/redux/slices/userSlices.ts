@@ -3,7 +3,7 @@ import { User, UserState } from "~/types/user";
 
 const initialState: UserState = {
   users: [],
-  currentUser: null,
+  currentUserId: null,
   status: "idle",
   error: null,
 };
@@ -62,7 +62,7 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      state.currentUser = null;
+      state.currentUserId = null;
       state.status = "idle";
       state.error = null;
     },
@@ -79,7 +79,7 @@ const userSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.currentUser = action.payload;
+        state.currentUserId = action.payload.id;
       })
       .addCase(login.rejected, (state, action) => {
         state.status = "failed";
@@ -92,7 +92,7 @@ const userSlice = createSlice({
       .addCase(register.fulfilled, (state, action: PayloadAction<User>) => {
         state.status = "succeeded";
         state.users?.push(action.payload);
-        state.currentUser = action.payload;
+        state.currentUserId = action.payload.id;
       })
       .addCase(register.rejected, (state, action) => {
         state.status = "failed";
@@ -100,7 +100,9 @@ const userSlice = createSlice({
       });
   },
 });
-
+export const selectCurrentUser = (state: { user: UserState }) => {
+  return  state.user.users?.find(user => user.id === state.user.currentUserId) || null;
+};
 export const { logout, resetError } = userSlice.actions;
 
 export default userSlice.reducer;

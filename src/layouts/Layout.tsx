@@ -10,7 +10,7 @@ type TaskContextType = {
   openRightBar: openRightBar;
 };
 const defaultTaskContext: TaskContextType = {
-  openRightBar: () => {},
+  openRightBar: (selectedTask: selectedTask | null) => {},
 };
 export const TaskContext = createContext<TaskContextType>(defaultTaskContext);
 
