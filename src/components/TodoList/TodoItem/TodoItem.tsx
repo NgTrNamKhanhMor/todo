@@ -8,19 +8,27 @@ import {
   Typography,
 } from "@mui/material";
 import { useContext } from "react";
+import { useDispatch } from "react-redux";
 import { TaskContext } from "~/layouts/Layout";
 import { Todo } from "~/types/todo";
+import { toggleComplete } from "~redux/slices/todoSlices";
+import { AppDispatch } from "~redux/store";
 type TodoItemProps = {
   task: Todo;
 };
 export default function TodoItem({ task }: TodoItemProps) {
   const { openRightBar } = useContext(TaskContext);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleToggleComplete = () => {
+    dispatch(toggleComplete(task.id));
+  };
 
   return (
     <>
       <ListItem>
         <Box display="flex" alignItems="center" width={1}>
-          <Checkbox sx={{ marginRight: 2 }} checked={task.completed} />
+          <Checkbox sx={{ marginRight: 2 }} checked={task.completed} onChange={handleToggleComplete} />
           <Box display="flex" flexDirection="column" flexGrow={1}>
             <Typography variant="h6">{task.name}</Typography>
             <Typography variant="body2" color="text.secondary">
