@@ -2,14 +2,15 @@
 import { Box, Pagination, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import { ITEMSPERPAGE } from "~/const/system";
+import { useFilteredTasks } from "~/hooks/useFilterTodos";
 import ControlPanel from "~components/ControlPanel/ControlPanel";
+import NoTodo from "~components/NoTodo/NoTodo";
 import TodoList from "~components/TodoList/TodoList";
 import TodoListSkeleton from "~components/TodoListSkeleton/TodoListSkeleton";
 import { getTodosByUserId } from "~helpers/todos";
 import { selectCurrentUser } from "~helpers/user";
 import { RootState } from "~redux/store";
 import MainHeader from "../components/MainHeader/MainHeader";
-import { useFilteredTasks } from "~/hooks/useFilterTodos";
 
 export default function Main() {
   const currentUser = selectCurrentUser();
@@ -21,11 +22,11 @@ export default function Main() {
     filteredTotal,
     totalTasks,
     currentPage,
+    isFiltering,
     handlePageChange,
   } = useFilteredTasks(tasks);
 
   const theme = useTheme();
-
   return (
     <Box
       component="main"
@@ -47,10 +48,12 @@ export default function Main() {
       <ControlPanel />
 
       <Box flexGrow={1}>
-        {status === "loading" ? (
+        {status === "loading" || isFiltering ? (
           <TodoListSkeleton />
-        ) : (
+        ) : finalTasks.length > 0 ? (
           <TodoList tasks={finalTasks} />
+        ) : (
+          <NoTodo />
         )}
       </Box>
 
