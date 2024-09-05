@@ -6,6 +6,7 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
+import { PersistGate } from "redux-persist/integration/react";
 import Auth from "~/layouts/Authentication";
 import Layout from "~/layouts/Layout";
 import Main from "~/pages/Main";
@@ -14,7 +15,6 @@ import ProtectedRoute from "./guard/ProtectedRoute";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
-import { PersistGate } from "redux-persist/integration/react";
 
 const router = createBrowserRouter(
   createRoutesFromElements(

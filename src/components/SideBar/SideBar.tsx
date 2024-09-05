@@ -5,18 +5,17 @@ import {
   Divider,
   Drawer,
   IconButton,
-  ListItem,
-  ListItemIcon,
   TextField,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { logout } from "~redux/slices/userSlices";
 import SideBarCategories from "./SideBarCategories/SideBarCategories";
 import SideBarTasks from "./SideBarTasks/SideBarTasks";
+import { useEffect } from "react";
 
 type SideBarProps = {
   open: boolean;
@@ -30,12 +29,31 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
   const drawerWidth = 400;
   const collapsedWidth = 150;
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
   };
 
+  const handleSubmitSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const searchValue = formData.get("search") || "";
+
+    const newParams = new URLSearchParams();
+    const dateQuery = searchParams.get("date") || "";
+    if (dateQuery) {
+      newParams.set("date", dateQuery);
+    }
+    if (searchValue) {
+      newParams.set("search", searchValue.toString());
+    }
+
+    if (typeof searchValue === "string") {
+      setSearchParams(newParams);
+    }
+  };
   return (
     <>
       {!isLargeScreen && <Menu onClick={toggleDrawer} sx={{ mt: 7, mx: 4 }} />}
@@ -95,19 +113,26 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
                 <Menu />
               </IconButton>
             </Box>
-            <ListItem>
-              <ListItemIcon onClick={open ? () => { } : toggleDrawer}>
+
+            <Box
+              component="form"
+              onSubmit={handleSubmitSearch}
+              sx={{ display: "flex", alignItems: "center" }}
+            >
+              <IconButton type="submit">
                 <Search />
-              </ListItemIcon>
+              </IconButton>
               {open && (
                 <TextField
+                  name="search"
                   placeholder="Search tasks..."
                   variant="outlined"
                   size="small"
                   fullWidth
+                  sx={{ marginRight: 1 }}
                 />
               )}
-            </ListItem>
+            </Box>
 
             <SideBarTasks open={open} />
             <Divider sx={{ my: 3 }} />

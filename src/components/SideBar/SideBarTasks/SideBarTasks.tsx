@@ -1,53 +1,86 @@
-import { CalendarMonth, FormatListBulleted, KeyboardDoubleArrowRight } from '@mui/icons-material';
-import { Chip, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import {
+  FormatListBulleted,
+  KeyboardDoubleArrowRight
+} from "@mui/icons-material";
+import {
+  Chip,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from "@mui/material";
+import { useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
+import { RootState } from "~redux/store";
+
 type SideBarTasksProps = {
-    open: boolean;
-  };
+  open: boolean;
+};
+
 export default function SideBarTasks({ open }: SideBarTasksProps) {
-    return (
-        <>
-            <Typography variant="h6" gutterBottom mt={2}> 
-                Tasks
-            </Typography>
-            <List>
-                <ListItemButton>
-                    <ListItemIcon>
-                        <KeyboardDoubleArrowRight />
-                    </ListItemIcon>
-                    {open && (
-                        <>
-                            <ListItemText primary="Upcoming" />
-                            <IconButton edge="end" disableRipple>
-                                <Chip label="12" size="small" clickable={false} />
-                            </IconButton>
-                        </>
-                    )}
+  const tasks = useSelector((state: RootState) => state.todos.todos);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-                </ListItemButton>
+  const todayStr = new Date().toISOString().split("T")[0];
 
-                <ListItemButton>
-                    <ListItemIcon>
-                        <FormatListBulleted />
-                    </ListItemIcon>
-                    {open && (
-                        <>
-                            <ListItemText primary="Today" />
-                            <IconButton edge="end" disableRipple>
-                                <Chip label="12" size="small" clickable={false} />
-                            </IconButton>
-                        </>
-                    )}
-                </ListItemButton>
+  const getTodayTasksCount = () => {
+    return tasks.filter((task) => task.date === todayStr).length;
+  };
 
-                <ListItemButton>
-                    <ListItemIcon>
-                        <CalendarMonth />
-                    </ListItemIcon>
-                    {open && (
-                        <ListItemText primary="Today" />
-                    )}
-                </ListItemButton>
-            </List>
-        </>
-    )
+  const getUpcomingTasksCount = () => {
+    return tasks.filter((task) => task.date > todayStr).length;
+  };
+
+  const handleFilterToday = () => {
+    setSearchParams({ date: 'today' });
+  };
+  const handleFilterUpcoming = () => {
+    setSearchParams({ date: 'upcoming' });
+  };
+
+  const todayTasksCount = getTodayTasksCount();
+  const upcomingTasksCount = getUpcomingTasksCount();
+
+  return (
+    <>
+      <Typography variant="h6" gutterBottom mt={2}>
+        Tasks
+      </Typography>
+      <List>
+        <ListItemButton onClick={handleFilterUpcoming}>
+          <ListItemIcon>
+            <KeyboardDoubleArrowRight />
+          </ListItemIcon>
+          {open && (
+            <>
+              <ListItemText primary="Upcoming" />
+              <IconButton edge="end" disableRipple>
+                <Chip
+                  label={upcomingTasksCount}
+                  size="small"
+                  clickable={false}
+                />
+              </IconButton>
+            </>
+          )}
+        </ListItemButton>
+
+        <ListItemButton onClick={handleFilterToday}>
+          <ListItemIcon>
+            <FormatListBulleted />
+          </ListItemIcon>
+          {open && (
+            <>
+              <ListItemText primary="Today" />
+              <IconButton edge="end" disableRipple>
+                <Chip label={todayTasksCount} size="small" clickable={false} />
+              </IconButton>
+            </>
+          )}
+        </ListItemButton>
+      </List>
+    </>
+  );
 }

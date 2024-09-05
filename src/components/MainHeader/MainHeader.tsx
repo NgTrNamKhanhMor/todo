@@ -1,46 +1,56 @@
-import { Add } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
-import { openRightBar } from '~/types/openRightBar';
-import { Task } from '~/types/task';
-type MainHeaderProps = {
-    tasks: Task[],
-    openRightBar: openRightBar;
-  }
-export default function MainHeader({tasks, openRightBar}: MainHeaderProps) {
-    return (
-        <Box>
-            <Box display="flex" alignItems="center" mb={2} width={1}>
-                <Typography variant="h3" component="h1">
-                    Today
-                </Typography>
-                <Box
-                    sx={{
-                        width: 50,
-                        height: 50,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "2px solid rgb(244,244,244)",
-                        borderRadius: "4px",
-                        fontSize: "2rem",
-                        fontWeight: "bold",
-                        color: "black",
-                        ml: 2,
-                    }}
-                >
-                    {tasks.length}
-                </Box>
-            </Box>
+import { Clear } from "@mui/icons-material";
+import { Box, Button, Stack, Typography } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
+import TaskCount from "~components/TaskCount/TaskCount";
+import { toPascalCase } from "~helpers/text";
 
+type MainHeaderProps = {
+  tasksCount: number;
+  title: URLSearchParams;
+};
+
+export default function MainHeader({ tasksCount, title }: MainHeaderProps) {
+  const searchQuery = title.get("search") || "";
+  const dateQuery = title.get("date") || "";
+  const displayTitle = searchQuery
+    ? `Search: ${searchQuery}`
+    : dateQuery
+      ? `Date: ${toPascalCase(dateQuery)}`
+      : "Tasks";
+  const subtitle = searchQuery && dateQuery ? `Date: ${dateQuery}` : undefined;
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const handleRemoveDate = () => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete("date");
+    setSearchParams(newParams);
+  };
+  return (
+    <Box>
+      <Box display="flex" flexDirection="column" mb={2}>
+        <Stack direction="row" gap={2} alignItems="center">
+          <Typography variant="h3" component="h1">
+            {displayTitle}
+          </Typography>
+          <TaskCount tasksCount={tasksCount} />
+        </Stack>
+        {subtitle && (
+          <Box display="flex" alignItems="center">
+            <Typography variant="h6" component="h2">
+              {subtitle}
+            </Typography>
             <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<Add />}
-                sx={{ mb: 3 }}
-                onClick={() => openRightBar(null)}
+              variant="outlined"
+              color="secondary"
+              startIcon={<Clear />}
+              onClick={handleRemoveDate}
+              sx={{ ml: 2 }}
             >
-                Add New Task
+              Clear
             </Button>
-        </Box>
-    )
+          </Box>
+        )}
+      </Box>
+    </Box>
+  );
 }

@@ -4,13 +4,13 @@ import {
   InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Typography, useMediaQuery, useTheme
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Task } from '~/types/task';
+import { Todo } from '~/types/todo';
 import DeleteDialog from '~components/DeleteDialog/DeleteDialog';
 
 type RightBarProps = {
   open: boolean,
   closeRightBar: () => void,
-  selectedTask: Task | null,
+  selectedTask: Todo | null,
 };
 
 export default function RightBar({ open, closeRightBar, selectedTask }: RightBarProps) {
@@ -84,7 +84,6 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
   };
 
   const handleSaveTask = () => {
-    // Add logic to save the task
   };
 
   return (

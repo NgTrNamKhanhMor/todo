@@ -1,3 +1,3 @@
-import { Task } from "~types/task";
+import { Task } from "~/types/todo";
 
-export type selectedTask =  Task | null
+export type selectedTask = Task | null
