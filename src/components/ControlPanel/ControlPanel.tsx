@@ -11,6 +11,7 @@ import {
 import dayjs, { Dayjs } from "dayjs";
 import { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { filters } from "~/const/filters";
 import { TaskContext } from "~/layouts/Layout";
 import { FilterOption } from "~/types/filter";
 import FilterDrawer from "~components/FilterDrawer/FilterDrawer";
@@ -24,9 +25,7 @@ export default function ControlPanel() {
   const dateQuery = searchParams.get("date") || "";
 
   const [filter, setFilter] = useState<FilterOption>("none");
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
-    dateQuery ? dayjs(dateQuery) : null
-  );
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -34,6 +33,7 @@ export default function ControlPanel() {
     const selectedFilter = event.target.value as FilterOption;
     applyFilter(selectedFilter, selectedDate);
   };
+
   const handleDateChange = (date: Dayjs | null) => {
     setSelectedDate(date);
     applyFilter(filter, date);
@@ -47,13 +47,11 @@ export default function ControlPanel() {
     setFilter(selectedFilter);
     const newParams = new URLSearchParams(searchParams.toString());
 
-    if (selectedFilter !== "none") {
-      newParams.set("filter", selectedFilter);
-    } else {
-      newParams.delete("filter");
-    }
+    newParams.set("filter", selectedFilter);
 
-    if (date) {
+    if (dateQuery === "upcoming" || dateQuery === "today") {
+      newParams.set("date", dateQuery);
+    } else if (date) {
       newParams.set("date", date.format("YYYY-MM-DD"));
     } else {
       newParams.delete("date");
@@ -62,6 +60,7 @@ export default function ControlPanel() {
     setSearchParams(newParams);
     setDrawerOpen(false);
   };
+
   const saveDrawerFilters = (
     drawerFilter: FilterOption,
     drawerDate: Dayjs | null
@@ -69,17 +68,20 @@ export default function ControlPanel() {
     applyFilter(drawerFilter, drawerDate);
   };
 
+  const getDateFromQuery = (dateQuery: string): Dayjs | null => {
+    const parsedDate = dayjs(dateQuery, "YYYY-MM-DD");
+    return parsedDate.isValid() ? parsedDate : null;
+  };
+
   useEffect(() => {
     const currentFilter =
       (searchParams.get("filter") as FilterOption) || "none";
     setFilter(currentFilter);
+
     const dateFromParams = searchParams.get("date");
-    if (dateFromParams) {
-      setSelectedDate(dayjs(dateFromParams));
-    } else {
-      setSelectedDate(null);
-    }
+    setSelectedDate(getDateFromQuery(dateFromParams || ""));
   }, [searchParams]);
+
   return (
     <>
       <Grid container spacing={3} my={3} alignItems="center">
@@ -116,11 +118,11 @@ export default function ControlPanel() {
                 label="Filter"
                 sx={{ height: 50, width: { xs: "100%", sm: "auto" } }}
               >
-                <MenuItem value="none">None</MenuItem>
-                <MenuItem value="dateAsc">Date Ascending</MenuItem>
-                <MenuItem value="dateDesc">Date Descending</MenuItem>
-                <MenuItem value="completed">Completed</MenuItem>
-                <MenuItem value="incomplete">Incomplete</MenuItem>
+                {filters.map((filter, index) => (
+                  <MenuItem value={filter.value} key={index}>
+                    {filter.name}
+                  </MenuItem>
+                ))}
               </Select>
             </Grid>
             <Grid item xs={12} sm="auto">
