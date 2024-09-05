@@ -6,19 +6,19 @@ import { toPascalCase } from "~helpers/text";
 
 type MainHeaderProps = {
   tasksCount: number;
-  title: URLSearchParams;
 };
 
-export default function MainHeader({ tasksCount, title }: MainHeaderProps) {
-  const searchQuery = title.get("search") || "";
-  const dateQuery = title.get("date") || "";
+export default function MainHeader({ tasksCount }: MainHeaderProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
+  const dateQuery = searchParams.get("date") || "";
+  const categoryQuery = searchParams.get("category") || "";
   const displayTitle = searchQuery
     ? `Search: ${searchQuery}`
-    : dateQuery
-      ? `Date: ${toPascalCase(dateQuery)}`
-      : "Tasks";
+    : categoryQuery
+    ? `Category: ${toPascalCase(categoryQuery)}`
+    : "Tasks";
   const subtitle = searchQuery && dateQuery ? `Date: ${dateQuery}` : undefined;
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleRemoveDate = () => {
     const newParams = new URLSearchParams(searchParams);

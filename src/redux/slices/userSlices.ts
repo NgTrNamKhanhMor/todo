@@ -100,9 +100,7 @@ const userSlice = createSlice({
       });
   },
 });
-export const selectCurrentUser = (state: { user: UserState }) => {
-  return  state.user.users?.find(user => user.id === state.user.currentUserId) || null;
-};
+
 export const { logout, resetError } = userSlice.actions;
 
 export default userSlice.reducer;

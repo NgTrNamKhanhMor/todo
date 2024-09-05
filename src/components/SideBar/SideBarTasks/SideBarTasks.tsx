@@ -1,10 +1,5 @@
 import {
-  FormatListBulleted,
-  KeyboardDoubleArrowRight
-} from "@mui/icons-material";
-import {
   Chip,
-  IconButton,
   List,
   ListItemButton,
   ListItemIcon,
@@ -14,6 +9,7 @@ import {
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { RootState } from "~redux/store";
+import { FormatListBulleted, KeyboardDoubleArrowRight } from "@mui/icons-material";
 
 type SideBarTasksProps = {
   open: boolean;
@@ -33,11 +29,27 @@ export default function SideBarTasks({ open }: SideBarTasksProps) {
     return tasks.filter((task) => task.date > todayStr).length;
   };
 
+  const isTodayActive = searchParams.get("date") === "today";
+  const isUpcomingActive = searchParams.get("date") === "upcoming";
+
   const handleFilterToday = () => {
-    setSearchParams({ date: 'today' });
+    const newParams = new URLSearchParams(searchParams);
+    if (isTodayActive) {
+      newParams.delete("date");
+    } else {
+      newParams.set("date", "today");
+    }
+    setSearchParams(newParams);
   };
+
   const handleFilterUpcoming = () => {
-    setSearchParams({ date: 'upcoming' });
+    const newParams = new URLSearchParams(searchParams);
+    if (isUpcomingActive) {
+      newParams.delete("date");
+    } else {
+      newParams.set("date", "upcoming");
+    }
+    setSearchParams(newParams);
   };
 
   const todayTasksCount = getTodayTasksCount();
@@ -49,34 +61,26 @@ export default function SideBarTasks({ open }: SideBarTasksProps) {
         Tasks
       </Typography>
       <List>
-        <ListItemButton onClick={handleFilterUpcoming}>
+        <ListItemButton onClick={handleFilterUpcoming} selected={isUpcomingActive}>
           <ListItemIcon>
             <KeyboardDoubleArrowRight />
           </ListItemIcon>
           {open && (
             <>
               <ListItemText primary="Upcoming" />
-              <IconButton edge="end" disableRipple>
-                <Chip
-                  label={upcomingTasksCount}
-                  size="small"
-                  clickable={false}
-                />
-              </IconButton>
+              <Chip label={upcomingTasksCount} size="small" clickable={false} />
             </>
           )}
         </ListItemButton>
 
-        <ListItemButton onClick={handleFilterToday}>
+        <ListItemButton onClick={handleFilterToday} selected={isTodayActive}>
           <ListItemIcon>
             <FormatListBulleted />
           </ListItemIcon>
           {open && (
             <>
               <ListItemText primary="Today" />
-              <IconButton edge="end" disableRipple>
-                <Chip label={todayTasksCount} size="small" clickable={false} />
-              </IconButton>
+              <Chip label={todayTasksCount} size="small" clickable={false} />
             </>
           )}
         </ListItemButton>

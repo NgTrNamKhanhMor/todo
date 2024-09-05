@@ -16,11 +16,11 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { categories } from "~/const/categories";
 import { Todo } from "~/types/todo";
 import DeleteDialog from "~components/DeleteDialog/DeleteDialog";
-import categoriesData from "~data/category.json";
+import { selectCurrentUser } from "~helpers/user";
 import { addTodo, deleteTodo, updateTodo } from "~redux/slices/todoSlices";
-import { selectCurrentUser } from "~redux/slices/userSlices";
 import { AppDispatch } from "~redux/store";
 
 type RightBarProps = {
@@ -35,7 +35,7 @@ export default function RightBar({
   selectedTask,
 }: RightBarProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const currentUser = useSelector(selectCurrentUser);
+  const currentUser = selectCurrentUser();
   const theme = useTheme();
   const drawerWidth = 400;
   const collapsedWidth = 150;
@@ -211,8 +211,8 @@ export default function RightBar({
               onChange={handleSelectChange}
               label="Task Category"
             >
-              {categoriesData.map((category, index) => (
-                <MenuItem value={category.name} key={index}>
+              {categories.map((category, index) => (
+                <MenuItem value={category.value} key={index}>
                   {category.name}
                 </MenuItem>
               ))}

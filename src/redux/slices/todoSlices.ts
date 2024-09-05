@@ -98,9 +98,7 @@ const todoSlice = createSlice({
 
     },
 });
-export const getTodosByUserId = (userId: number) => (state: RootState) => {
-    return state.todos.todos.filter(todo => todo.user === userId);
-};
+
 export const { toggleComplete } = todoSlice.actions;
 export default todoSlice.reducer;
 

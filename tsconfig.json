@@ -118,26 +118,11 @@
       "~guard/*": [
         "src/guard/*"
       ],
-      "~Filters/*": [
-        "src/components/Filters/*"
-      ],
-      "~DatePicker/*": [
-        "src/components/DatePicker/*"
-      ],
-      "~MyDatePicker/*": [
-        "src/components/MyDatePicker/*"
-      ],
-      "~ControlPanels/*": [
-        "src/components/ControlPanel/*"
-      ],
-      "~ControlPanel/*": [
-        "src/components/ControlPanel/*"
-      ],
       "~const/*": [
         "src/const/*"
       ],
-      "~TodoListSkeleton/*": [
-        "src/components/TodoListSkeleton/*"
+      "~hooks/*": [
+        "src/hooks/*"
       ]
     }
   }

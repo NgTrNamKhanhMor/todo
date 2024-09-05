@@ -11,6 +11,7 @@ import { useContext } from "react";
 import { useDispatch } from "react-redux";
 import { TaskContext } from "~/layouts/Layout";
 import { Todo } from "~/types/todo";
+import { toPascalCase } from "~helpers/text";
 import { toggleComplete } from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
 type TodoItemProps = {
@@ -35,7 +36,7 @@ export default function TodoItem({ task }: TodoItemProps) {
               {task.date}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {task.category}
+              {toPascalCase(task.category)}
             </Typography>
           </Box>
         </Box>
