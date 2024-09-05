@@ -1,19 +1,33 @@
 import { Box, Pagination, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { ITEMSPERPAGE } from "~/const/system";
+import { Todo } from "~/types/todo";
 import ControlPanel from "~components/ControlPanel/ControlPanel";
 import TodoList from "~components/TodoList/TodoList";
-import tasksData from "~data/tasks.json";
+import TodoListSkeleton from "~components/TodoListSkeleton/TodoListSkeleton";
+import {
+  filterTasksByCompletion,
+  filterTasksByDate,
+  filterTasksBySearch,
+  paginateTasks,
+} from "~helpers/filterTodos";
+import { getTodosByUserId } from "~redux/slices/todoSlices";
+import { selectCurrentUser } from "~redux/slices/userSlices";
+import { RootState } from "~redux/store";
 import MainHeader from "../components/MainHeader/MainHeader";
 
 export default function Main() {
-  const [tasks, setTasks] = useState(tasksData);
+  const currentUser = useSelector(selectCurrentUser);
+  const tasks = useSelector(getTodosByUserId(currentUser!.id));
+  const status = useSelector((state: RootState) => state.todos.status);
+  const error = useSelector((state: RootState) => state.todos.error);
+  const [finalTasks, setFinalTasks] = useState<Todo[]>(tasks);
   const [filteredTotal, setFilteredTotal] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [totalTasks, setTotalTasks] = useState(0);
-  const itemsPerPage = 5;
   const theme = useTheme();
-
   const searchQuery = searchParams.get("search") || "";
   const filterQuery = searchParams.get("filter") || "";
   const dateQuery = searchParams.get("date") || "";
@@ -21,74 +35,45 @@ export default function Main() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    let filteredTasks = tasksData;
-
-    if (searchQuery) {
-      filteredTasks = filteredTasks.filter((task) =>
-        task.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    if (filterQuery) {
-      switch (filterQuery) {
-        case "dateAsc":
-          filteredTasks.sort(
-            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-          );
-          break;
-        case "dateDesc":
-          filteredTasks.sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-          );
-          break;
-        case "completed":
-          filteredTasks = filteredTasks.filter((task) => task.completed);
-          break;
-        case "incomplete":
-          filteredTasks = filteredTasks.filter((task) => !task.completed);
-          break;
-        default:
-          break;
-      }
-    }
-    if (dateQuery) {
-      const now = new Date();
-      const startOfToday = new Date(now.setHours(0, 0, 0, 0)).getTime();
-      if (dateQuery === "today") {
-        filteredTasks = filteredTasks.filter((task) => {
-          const taskDate = new Date(task.date).setHours(0, 0, 0, 0);
-          return taskDate == startOfToday;
-        });
-      } else if (dateQuery === "upcoming") {
-        filteredTasks = filteredTasks.filter((task) => {
-          const taskDate = new Date(task.date).setHours(0, 0, 0, 0);
-          return taskDate > startOfToday;
-        });
-      } else {
-        const startDate = new Date(dateQuery).setHours(0, 0, 0, 0);
-        filteredTasks = filteredTasks.filter((task) => {
-          const taskDate = new Date(task.date).setHours(0, 0, 0, 0);
-          return taskDate === startDate;
-        });
-      }
-    }
-
-    const totalPages = Math.ceil(filteredTasks.length / itemsPerPage);
-    const validPage = Math.max(1, Math.min(pageQuery, totalPages));
-
-    const paginatedTasks = filteredTasks.slice(
-      (validPage - 1) * itemsPerPage,
-      validPage * itemsPerPage
+    let filteredTasks = tasks;
+    filteredTasks = filterTasksBySearch(tasks, searchQuery);
+    filteredTasks = filterTasksByCompletion(filteredTasks, filterQuery, setSearchParams, searchParams);
+    filteredTasks = filterTasksByDate(filteredTasks, dateQuery, setSearchParams, searchParams);
+    const { paginatedTasks, validPage } = paginateTasks(
+      filteredTasks,
+      pageQuery,
+      currentPage,
+      searchParams,
+      setCurrentPage,
+      setSearchParams
     );
 
-    setTasks(paginatedTasks);
-    setTotalTasks(filteredTasks.length);
-    setFilteredTotal(filteredTasks.length);
-    setCurrentPage(validPage);
-
-    const params = new URLSearchParams(searchParams);
-    params.set("page", validPage.toString());
-    setSearchParams(params);
-  }, [searchQuery, filterQuery, dateQuery, pageQuery]);
+    if (JSON.stringify(finalTasks) !== JSON.stringify(paginatedTasks)) {
+      setFinalTasks(paginatedTasks);
+    }
+    if (totalTasks !== filteredTasks.length) {
+      setTotalTasks(filteredTasks.length);
+    }
+    if (filteredTotal !== filteredTasks.length) {
+      setFilteredTotal(filteredTasks.length);
+    }
+    if (currentPage !== validPage) {
+      setCurrentPage(validPage);
+      const params = new URLSearchParams(searchParams);
+      params.set("page", validPage.toString());
+      setSearchParams(params);
+    }
+  }, [
+    searchQuery,
+    filterQuery,
+    dateQuery,
+    pageQuery,
+    tasks,
+    finalTasks,
+    totalTasks,
+    filteredTotal,
+    currentPage,
+  ]);
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -101,7 +86,6 @@ export default function Main() {
     params.set("page", newPage.toString());
     setSearchParams(params);
   };
-
   return (
     <Box
       component="main"
@@ -123,12 +107,16 @@ export default function Main() {
       <ControlPanel />
 
       <Box flexGrow={1}>
-        <TodoList tasks={tasks} />
+        {status === "loading" ? (
+          <TodoListSkeleton />
+        ) : (
+          <TodoList tasks={finalTasks} />
+        )}
       </Box>
 
       <Box mt="auto" width={1} display="flex" justifyContent="center" pb={2}>
         <Pagination
-          count={Math.ceil(totalTasks / itemsPerPage)}
+          count={Math.ceil(totalTasks / ITEMSPERPAGE)}
           page={currentPage}
           color="primary"
           onChange={handlePageChange}

@@ -2,6 +2,7 @@ import { Clear } from "@mui/icons-material";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import TaskCount from "~components/TaskCount/TaskCount";
+import { toPascalCase } from "~helpers/text";
 
 type MainHeaderProps = {
   tasksCount: number;
@@ -14,8 +15,8 @@ export default function MainHeader({ tasksCount, title }: MainHeaderProps) {
   const displayTitle = searchQuery
     ? `Search: ${searchQuery}`
     : dateQuery
-    ? `Date: ${dateQuery}`
-    : "Tasks";
+      ? `Date: ${toPascalCase(dateQuery)}`
+      : "Tasks";
   const subtitle = searchQuery && dateQuery ? `Date: ${dateQuery}` : undefined;
   const [searchParams, setSearchParams] = useSearchParams();
 
