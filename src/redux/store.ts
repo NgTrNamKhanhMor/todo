@@ -5,22 +5,20 @@ import storage from "redux-persist/lib/storage";
 import todoSlices from "./slices/todoSlices";
 import userSlices from "./slices/userSlices";
 
-
-
 const persistConfig = {
-    key: "root",
-    storage,
+  key: "root",
+  storage,
 };
 
 const rootReducer = combineReducers({
-    user: userSlices,
-    todos: todoSlices,
+  user: userSlices,
+  todos: todoSlices,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-    reducer: persistedReducer,
+  reducer: persistedReducer,
 });
 
 export const persistor = persistStore(store);

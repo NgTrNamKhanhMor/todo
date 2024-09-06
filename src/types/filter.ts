@@ -1,1 +1,6 @@
-export type FilterOption = "none" | "dateAsc" | "dateDesc" | "completed" | "incomplete";
+export type FilterOption =
+  | "none"
+  | "dateAsc"
+  | "dateDesc"
+  | "completed"
+  | "incomplete";

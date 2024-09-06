@@ -16,8 +16,8 @@ export default function MainHeader({ tasksCount }: MainHeaderProps) {
   const displayTitle = searchQuery
     ? `Search: ${searchQuery}`
     : categoryQuery
-    ? `Category: ${toPascalCase(categoryQuery)}`
-    : "Tasks";
+      ? `Category: ${toPascalCase(categoryQuery)}`
+      : "Tasks";
   const subtitle = searchQuery && dateQuery ? `Date: ${dateQuery}` : undefined;
 
   const handleRemoveDate = () => {

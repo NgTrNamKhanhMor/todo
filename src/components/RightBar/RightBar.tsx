@@ -15,7 +15,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { categories } from "~/const/categories";
 import { Todo } from "~/types/todo";
 import DeleteDialog from "~components/DeleteDialog/DeleteDialog";
