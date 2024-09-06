@@ -1,7 +1,7 @@
-import { LockOutlined } from "@mui/icons-material";
-import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
+import { LockOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Avatar, Box, Button, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { StyledPaper } from "~/styles/Paper.style";
@@ -12,13 +12,15 @@ import { AppDispatch, RootState } from "~redux/store";
 export default function Login() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { status, error } = useSelector(
-    (state: RootState) => state.user
-  );
+  const { status, error } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     dispatch(resetError());
-  }, []);
+  }, [dispatch]);
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
 
   const formik = useFormik({
     initialValues: {
@@ -77,7 +79,7 @@ export default function Login() {
           fullWidth
           name="password"
           label="Password"
-          type="password"
+          type={showPassword ? "text" : "password"}
           id="password"
           autoComplete="current-password"
           value={formik.values.password}
@@ -85,6 +87,19 @@ export default function Login() {
           onBlur={formik.handleBlur}
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={handleClickShowPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <Button
           type="submit"
