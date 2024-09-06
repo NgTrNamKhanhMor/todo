@@ -1,3 +1,4 @@
+import { categories } from "~/const/categories";
 import { filters } from "~/const/filters";
 import { ITEMSPERPAGE } from "~/const/system";
 import { Todo } from "~/types/todo";
@@ -50,15 +51,17 @@ export function filterTasksByCategory(
   searchParams: URLSearchParams
 ): Todo[] {
   if (!categoryQuery) return tasks;
-  const filteredTasks = tasks.filter((task) => task.category === categoryQuery);
-  if (filteredTasks) {
+  const validCategoriesValues = categories.map((category) => category.value);
+  if (validCategoriesValues.includes(categoryQuery)) {
+    const filteredTasks = tasks.filter(
+      (task) => task.category === categoryQuery
+    );
     return filteredTasks;
-  } else {
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.delete("category");
-    setSearchParams(newParams);
-    return tasks;
   }
+  const newParams = new URLSearchParams(searchParams.toString());
+  newParams.delete("category");
+  setSearchParams(newParams);
+  return tasks;
 }
 export function filterTasksByDate(
   tasks: Todo[],
@@ -142,5 +145,3 @@ function updatePageIfNeeded(
     setSearchParams(params);
   }
 }
-
-

@@ -1,6 +1,5 @@
 // src/helpers/useFilteredTasks.ts
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { Todo } from "~/types/todo";
 import {
@@ -10,11 +9,9 @@ import {
   filterTasksBySearch,
   paginateTasks,
 } from "~helpers/filterTodos";
-import { AppDispatch } from "~redux/store";
 
 export function useFilteredTasks(tasks: Todo[]) {
   const [finalTasks, setFinalTasks] = useState<Todo[]>(tasks);
-  const dispatch = useDispatch<AppDispatch>();
   const [filteredTotal, setFilteredTotal] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [totalTasks, setTotalTasks] = useState(0);
