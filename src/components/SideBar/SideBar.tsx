@@ -11,11 +11,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { logout } from "~redux/slices/userSlices";
 import SideBarCategories from "./SideBarCategories/SideBarCategories";
 import SideBarTasks from "./SideBarTasks/SideBarTasks";
-import { useEffect } from "react";
 
 type SideBarProps = {
   open: boolean;
@@ -40,16 +39,10 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const searchValue = formData.get("search") || "";
-
-    const newParams = new URLSearchParams();
-    const dateQuery = searchParams.get("date") || "";
-    if (dateQuery) {
-      newParams.set("date", dateQuery);
-    }
+    const newParams = new URLSearchParams(searchParams.toString());
     if (searchValue) {
       newParams.set("search", searchValue.toString());
     }
-
     if (typeof searchValue === "string") {
       setSearchParams(newParams);
     }
@@ -90,12 +83,6 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
           flexDirection="column"
           justifyContent="space-between"
           borderRadius={4}
-          sx={{
-            transition: theme.transitions.create("width", {
-              easing: theme.transitions.easing.sharp,
-              duration: theme.transitions.duration.standard,
-            }),
-          }}
         >
           <Box>
             <Box
@@ -105,9 +92,11 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
               mb={2}
             >
               {open && (
-                <Typography variant="h5" textTransform="uppercase">
-                  Menu
-                </Typography>
+                <Link to={"/"}>
+                  <Typography variant="h5" textTransform="uppercase">
+                    Menu
+                  </Typography>
+                </Link>
               )}
               <IconButton size="small" onClick={toggleDrawer}>
                 <Menu />

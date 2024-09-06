@@ -118,20 +118,11 @@
       "~guard/*": [
         "src/guard/*"
       ],
-      "~Filters/*": [
-        "src/components/Filters/*"
+      "~const/*": [
+        "src/const/*"
       ],
-      "~DatePicker/*": [
-        "src/components/DatePicker/*"
-      ],
-      "~MyDatePicker/*": [
-        "src/components/MyDatePicker/*"
-      ],
-      "~ControlPanels/*": [
-        "src/components/ControlPanel/*"
-      ],
-      "~ControlPanel/*": [
-        "src/components/ControlPanel/*"
+      "~hooks/*": [
+        "src/hooks/*"
       ]
     }
   }

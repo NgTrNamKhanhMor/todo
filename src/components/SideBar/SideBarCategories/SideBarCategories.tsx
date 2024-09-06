@@ -7,9 +7,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { categories } from "~/const/categories";
 import AddCategoryDialog from "~components/AddCategoryDialog/AddCategoryDialog";
 import SideBarCategoryItem from "~components/SideBar/SideBarCategories/SideBarCategoryItem/SideBarCategoryItem";
-import categoriesData from "~data/category.json";
 type SideBarCategoriesProps = {
   open: boolean;
 };
@@ -42,7 +42,7 @@ export default function SideBarCategories({ open }: SideBarCategoriesProps) {
           {open && <ListItemText primary="Add a category" />}
         </ListItemButton>
 
-        {categoriesData.map((category, index) => (
+        {categories.map((category, index) => (
           <SideBarCategoryItem key={index} open={open} category={category} />
         ))}
       </List>

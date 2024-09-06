@@ -49,13 +49,14 @@ export default function ControlPanel() {
 
     newParams.set("filter", selectedFilter);
 
-    if (dateQuery === "upcoming" || dateQuery === "today") {
-      newParams.set("date", dateQuery);
-    } else if (date) {
+    if (date) {
       newParams.set("date", date.format("YYYY-MM-DD"));
+    } else if (dateQuery === "upcoming" || dateQuery === "today") {
+      newParams.set("date", dateQuery);
     } else {
       newParams.delete("date");
     }
+
 
     setSearchParams(newParams);
     setDrawerOpen(false);
