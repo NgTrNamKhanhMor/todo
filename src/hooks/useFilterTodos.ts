@@ -4,9 +4,9 @@ import { useSearchParams } from "react-router-dom";
 import { Todo } from "~/types/todo";
 import {
   filterTasksByCategory,
-  filterTasksByCompletion,
   filterTasksByDate,
   filterTasksBySearch,
+  filterTasksBySort,
   paginateTasks,
 } from "~helpers/filterTodos";
 
@@ -18,7 +18,7 @@ export function useFilteredTasks(tasks: Todo[]) {
   const [currentPage, setCurrentPage] = useState(1);
   const [isFiltering, setIsFiltering] = useState(true);
   const searchQuery = searchParams.get("search") || "";
-  const filterQuery = searchParams.get("filter") || "";
+  const sortQuery = searchParams.get("sort") || "";
   const categoryQuery = searchParams.get("category") || "";
   const dateQuery = searchParams.get("date") || "";
   const pageQuery = parseInt(searchParams.get("page") || "1", 10);
@@ -27,9 +27,9 @@ export function useFilteredTasks(tasks: Todo[]) {
     setIsFiltering(true);
     let filteredTasks = tasks;
     filteredTasks = filterTasksBySearch(tasks, searchQuery);
-    filteredTasks = filterTasksByCompletion(
+    filteredTasks = filterTasksBySort(
       filteredTasks,
-      filterQuery,
+      sortQuery,
       setSearchParams,
       searchParams
     );
@@ -62,7 +62,7 @@ export function useFilteredTasks(tasks: Todo[]) {
     setIsFiltering(false);
   }, [
     searchQuery,
-    filterQuery,
+    sortQuery,
     dateQuery,
     categoryQuery,
     pageQuery,
@@ -76,7 +76,7 @@ export function useFilteredTasks(tasks: Todo[]) {
   ) => {
     const params = new URLSearchParams();
     if (searchQuery) params.set("search", searchQuery);
-    if (filterQuery) params.set("filter", filterQuery);
+    if (sortQuery) params.set("sort", sortQuery);
     if (categoryQuery) params.set("category", categoryQuery);
     if (dateQuery) params.set("date", dateQuery);
     params.set("page", newPage.toString());

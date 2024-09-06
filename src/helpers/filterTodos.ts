@@ -1,5 +1,4 @@
 import { categories } from "~/const/categories";
-import { filters } from "~/const/filters";
 import { ITEMSPERPAGE } from "~/const/system";
 import { Todo } from "~/types/todo";
 
@@ -12,36 +11,42 @@ export function filterTasksBySearch(
     task.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 }
-export function filterTasksByCompletion(
+function deleteParams(
+  type: string,
+  searchParams: URLSearchParams,
+  setSearchParams: (params: URLSearchParams) => void
+) {
+  const newParams = new URLSearchParams(searchParams.toString());
+  newParams.delete(type);
+  setSearchParams(newParams);
+}
+
+export function filterTasksBySort(
   tasks: Todo[],
-  filterQuery: string,
+  sortquery: string,
   setSearchParams: (params: URLSearchParams) => void,
   searchParams: URLSearchParams
 ): Todo[] {
-  const validFilterValues = filters.map((filter) => filter.value);
-  if (!validFilterValues.includes(filterQuery)) {
-    filterQuery = "none";
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set("filter", "none");
-    setSearchParams(newParams);
+  if (sortquery) {
+    switch (sortquery) {
+      case "dateAsc":
+        return tasks.sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+      case "dateDesc":
+        return tasks.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+      case "completed":
+        return tasks.filter((task) => task.completed);
+      case "incomplete":
+        return tasks.filter((task) => !task.completed);
+      default:
+        deleteParams("sort", searchParams, setSearchParams);
+        return tasks;
+    }
+  } else {
     return tasks;
-  }
-
-  switch (filterQuery) {
-    case "dateAsc":
-      return tasks.sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
-    case "dateDesc":
-      return tasks.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-    case "completed":
-      return tasks.filter((task) => task.completed);
-    case "incomplete":
-      return tasks.filter((task) => !task.completed);
-    default:
-      return tasks;
   }
 }
 export function filterTasksByCategory(
@@ -50,18 +55,19 @@ export function filterTasksByCategory(
   setSearchParams: (params: URLSearchParams) => void,
   searchParams: URLSearchParams
 ): Todo[] {
-  if (!categoryQuery) return tasks;
-  const validCategoriesValues = categories.map((category) => category.value);
-  if (validCategoriesValues.includes(categoryQuery)) {
-    const filteredTasks = tasks.filter(
-      (task) => task.category === categoryQuery
-    );
-    return filteredTasks;
+  if (categoryQuery) {
+    const validCategoriesValues = categories.map((category) => category.value);
+    if (validCategoriesValues.includes(categoryQuery)) {
+      const filteredTasks = tasks.filter(
+        (task) => task.category === categoryQuery
+      );
+      return filteredTasks;
+    }
+    deleteParams("category", searchParams, setSearchParams);
+    return tasks;
+  } else {
+    return tasks;
   }
-  const newParams = new URLSearchParams(searchParams.toString());
-  newParams.delete("category");
-  setSearchParams(newParams);
-  return tasks;
 }
 export function filterTasksByDate(
   tasks: Todo[],
@@ -69,33 +75,33 @@ export function filterTasksByDate(
   setSearchParams: (params: URLSearchParams) => void,
   searchParams: URLSearchParams
 ): Todo[] {
-  if (!dateQuery) return tasks;
+  if (dateQuery) {
+    const now = new Date();
+    const startOfToday = new Date(now.setHours(0, 0, 0, 0)).getTime();
 
-  const now = new Date();
-  const startOfToday = new Date(now.setHours(0, 0, 0, 0)).getTime();
-
-  switch (dateQuery.toLowerCase()) {
-    case "today":
-      return tasks.filter(
-        (task) => new Date(task.date).setHours(0, 0, 0, 0) === startOfToday
-      );
-    case "upcoming":
-      return tasks.filter(
-        (task) => new Date(task.date).setHours(0, 0, 0, 0) > startOfToday
-      );
-    default:
-      const parsedDate = Date.parse(dateQuery);
-      if (!isNaN(parsedDate)) {
-        const startDate = new Date(parsedDate).setHours(0, 0, 0, 0);
+    switch (dateQuery.toLowerCase()) {
+      case "today":
         return tasks.filter(
-          (task) => new Date(task.date).setHours(0, 0, 0, 0) === startDate
+          (task) => new Date(task.date).setHours(0, 0, 0, 0) === startOfToday
         );
-      } else {
-        const newParams = new URLSearchParams(searchParams.toString());
-        newParams.delete("date");
-        setSearchParams(newParams);
-        return tasks;
-      }
+      case "upcoming":
+        return tasks.filter(
+          (task) => new Date(task.date).setHours(0, 0, 0, 0) > startOfToday
+        );
+      default:
+        const parsedDate = Date.parse(dateQuery);
+        if (!isNaN(parsedDate)) {
+          const startDate = new Date(parsedDate).setHours(0, 0, 0, 0);
+          return tasks.filter(
+            (task) => new Date(task.date).setHours(0, 0, 0, 0) === startDate
+          );
+        } else {
+          deleteParams("date", searchParams, setSearchParams);
+          return tasks;
+        }
+    }
+  } else {
+    return tasks;
   }
 }
 export function paginateTasks(
