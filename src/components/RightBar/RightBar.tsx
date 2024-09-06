@@ -16,6 +16,7 @@ import {
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { categories } from "~/const/categories";
 import { Todo } from "~/types/todo";
 import DeleteDialog from "~components/DeleteDialog/DeleteDialog";
@@ -32,6 +33,7 @@ type RightBarProps = {
 
 export default function RightBar({ open, closeRightBar, selectedTask }: RightBarProps) {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const currentUser = selectCurrentUser();
   const theme = useTheme();
   const drawerWidth = 400;
@@ -89,6 +91,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
       } else {
         dispatch(addTodo(taskData));
       }
+      navigate("/");
       closeRightBar();
     },
   });
