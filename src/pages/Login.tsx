@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { StyledPaper } from "~/styles/Paper.style";
-import { validationSchema } from "~helpers/authValidation";
+import { authSchema } from "~helpers/authValidation";
 import { login, resetError } from "~redux/slices/userSlices";
 import { AppDispatch, RootState } from "~redux/store";
 
@@ -27,7 +27,7 @@ export default function Login() {
       email: "",
       password: "",
     },
-    validationSchema: validationSchema,
+    validationSchema: authSchema,
     onSubmit: (values, { setSubmitting }) => {
       dispatch(login(values))
         .unwrap()
