@@ -1,147 +1,113 @@
-import { Add, FilterList } from "@mui/icons-material";
+import { Add, FilterList, KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import {
+  Badge,
+  Box,
   Button,
+  Collapse,
   Grid,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
   useMediaQuery,
-  useTheme,
+  useTheme
 } from "@mui/material";
-import dayjs, { Dayjs } from "dayjs";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { filters } from "~/const/filters";
+import { filterParams } from "~/const/filtersCount";
 import { TaskContext } from "~/layouts/Layout";
-import { FilterOption } from "~/types/filter";
-import FilterDrawer from "~components/FilterDrawer/FilterDrawer";
-import MyDatePicker from "~components/MyDatePicker/MyDatePicker";
+import Filters from "~components/Filters/Filters";
+import SearchBar from "~components/SearchBar/SearchBar";
 
 export default function ControlPanel() {
   const theme = useTheme();
   const { openRightBar } = useContext(TaskContext);
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const dateQuery = searchParams.get("date") || "";
-
-  const [filter, setFilter] = useState<FilterOption>("none");
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
-  const handleFilterChange = (event: SelectChangeEvent<string>) => {
-    const selectedFilter = event.target.value as FilterOption;
-    applyFilter(selectedFilter, selectedDate);
-  };
+  const activeFilterCount = filterParams.filter(param => {
+    const value = searchParams.get(param);
+    return value && value.trim() !== "";
+  }).length;
 
-  const handleDateChange = (date: Dayjs | null) => {
-    setSelectedDate(date);
-    applyFilter(filter, date);
-  };
-
-  const toggleDrawer = (open: boolean) => () => {
-    setDrawerOpen(open);
-  };
-
-  const applyFilter = (selectedFilter: FilterOption, date: Dayjs | null) => {
-    setFilter(selectedFilter);
-    const newParams = new URLSearchParams(searchParams.toString());
-
-    newParams.set("filter", selectedFilter);
-
-    if (date) {
-      newParams.set("date", date.format("YYYY-MM-DD"));
-    } else if (dateQuery === "upcoming" || dateQuery === "today") {
-      newParams.set("date", dateQuery);
-    } else {
-      newParams.delete("date");
-    }
-
-
-    setSearchParams(newParams);
-    setDrawerOpen(false);
-  };
-
-  const saveDrawerFilters = (
-    drawerFilter: FilterOption,
-    drawerDate: Dayjs | null
-  ) => {
-    applyFilter(drawerFilter, drawerDate);
-  };
-
-  const getDateFromQuery = (dateQuery: string): Dayjs | null => {
-    const parsedDate = dayjs(dateQuery, "YYYY-MM-DD");
-    return parsedDate.isValid() ? parsedDate : null;
-  };
-
-  useEffect(() => {
-    const currentFilter =
-      (searchParams.get("filter") as FilterOption) || "none";
-    setFilter(currentFilter);
-
-    const dateFromParams = searchParams.get("date");
-    setSelectedDate(getDateFromQuery(dateFromParams || ""));
-  }, [searchParams]);
+  const hasActiveFilters = filterParams.some(param => {
+    const value = searchParams.get(param);
+    return value && value.trim() !== "";
+  });
 
   return (
-    <>
-      <Grid container spacing={3} my={3} alignItems="center">
+    <Box sx={{ p: 3, mb: 3 }}>
+      <Grid container spacing={3} alignItems="center">
         <Grid item xs={12} sm="auto">
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<Add />}
-            sx={{ height: 50, width: { xs: "100%", sm: "auto" } }}
-            onClick={() => openRightBar(null)}
-          >
-            Add New Task
-          </Button>
+          <SearchBar />
         </Grid>
-
-        {isSmallScreen ? (
-          <Grid item xs={12} sm="auto">
+        <Grid item xs={6} sm="auto">
+          <Badge
+            badgeContent={activeFilterCount > 0 ? activeFilterCount : undefined}
+            color="primary"
+            overlap="rectangular"
+            sx={{
+              width: "100%",
+              "& .MuiBadge-dot": {
+                backgroundColor: "transparent",
+              },
+            }}
+          >
             <Button
-              variant="text"
+              variant="outlined"
               color="primary"
               startIcon={<FilterList />}
-              sx={{ height: 50, width: { xs: "100%", sm: "auto" } }}
-              onClick={toggleDrawer(true)}
+              endIcon={isAccordionOpen ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+              sx={{
+                height: 50,
+                width: { xs: "100%", sm: "auto" },
+                borderWidth: 1,
+                borderColor: "primary.main",
+                borderStyle: "solid",
+                "&:hover": {
+                  borderColor: "primary.main",
+                  borderWidth: hasActiveFilters ? 2 : 1,
+                },
+                "&.MuiButton-outlined": {
+                  borderWidth: hasActiveFilters ? 2 : 1,
+                },
+              }}
+              onClick={() => setIsAccordionOpen(!isAccordionOpen)}
             >
               Filter
             </Button>
-          </Grid>
-        ) : (
-          <>
-            <Grid item xs={12} sm="auto">
-              <Select
-                value={filter}
-                onChange={handleFilterChange}
-                label="Filter"
-                sx={{ height: 50, width: { xs: "100%", sm: "auto" } }}
-              >
-                {filters.map((filter, index) => (
-                  <MenuItem value={filter.value} key={index}>
-                    {filter.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Grid>
-            <Grid item xs={12} sm="auto">
-              <MyDatePicker
-                selectedDate={selectedDate}
-                handleDateChange={handleDateChange}
-              />
-            </Grid>
-          </>
-        )}
+          </Badge>
+        </Grid>
+        <Grid item xs={6} sm="auto">
+          <Button
+            variant="outlined"
+            color="primary"
+            size="medium"
+            startIcon={<Add />}
+            sx={{
+              height: 50,
+              width: { xs: "100%", sm: "auto" },
+              "& .MuiButton-startIcon": {
+                marginRight: isSmallScreen ? 0 : undefined,
+              },
+            }}
+            onClick={() => openRightBar(null)}
+          >
+            {!isSmallScreen && "Add New Task"}
+          </Button>
+        </Grid>
       </Grid>
-      <FilterDrawer
-        open={drawerOpen}
-        filter={filter}
-        selectedDate={selectedDate}
-        onSubmit={saveDrawerFilters}
-        onClose={toggleDrawer(false)}
-      />
-    </>
+
+      <Collapse in={isAccordionOpen}>
+        <Box
+          sx={{
+            mt: 2,
+            boxShadow: "none",
+            "&::before": {
+              display: "none",
+            },
+          }}
+        >
+          <Filters />
+        </Box>
+      </Collapse>
+    </Box>
   );
 }

@@ -8,6 +8,7 @@ import {
   filterTasksByDate,
   filterTasksBySearch,
   paginateTasks,
+  sortTasksByDate,
 } from "~helpers/filterTodos";
 
 export function useFilteredTasks(tasks: Todo[]) {
@@ -18,7 +19,8 @@ export function useFilteredTasks(tasks: Todo[]) {
   const [currentPage, setCurrentPage] = useState(1);
   const [isFiltering, setIsFiltering] = useState(true);
   const searchQuery = searchParams.get("search") || "";
-  const filterQuery = searchParams.get("filter") || "";
+  const sortQuery = searchParams.get("sort") || "";
+   const completionQuery = searchParams.get("completed") || "";
   const categoryQuery = searchParams.get("category") || "";
   const dateQuery = searchParams.get("date") || "";
   const pageQuery = parseInt(searchParams.get("page") || "1", 10);
@@ -27,12 +29,19 @@ export function useFilteredTasks(tasks: Todo[]) {
     setIsFiltering(true);
     let filteredTasks = tasks;
     filteredTasks = filterTasksBySearch(tasks, searchQuery);
-    filteredTasks = filterTasksByCompletion(
+    filteredTasks = sortTasksByDate(
       filteredTasks,
-      filterQuery,
+      sortQuery,
       setSearchParams,
       searchParams
     );
+    filteredTasks = filterTasksByCompletion(
+      filteredTasks,
+      completionQuery,
+      setSearchParams,
+      searchParams
+    );
+
     filteredTasks = filterTasksByCategory(
       filteredTasks,
       categoryQuery,
@@ -62,7 +71,8 @@ export function useFilteredTasks(tasks: Todo[]) {
     setIsFiltering(false);
   }, [
     searchQuery,
-    filterQuery,
+    sortQuery,
+    completionQuery,
     dateQuery,
     categoryQuery,
     pageQuery,
@@ -76,7 +86,8 @@ export function useFilteredTasks(tasks: Todo[]) {
   ) => {
     const params = new URLSearchParams();
     if (searchQuery) params.set("search", searchQuery);
-    if (filterQuery) params.set("filter", filterQuery);
+    if (sortQuery) params.set("sort", sortQuery);
+     if (categoryQuery) params.set("completed", sortQuery);
     if (categoryQuery) params.set("category", categoryQuery);
     if (dateQuery) params.set("date", dateQuery);
     params.set("page", newPage.toString());

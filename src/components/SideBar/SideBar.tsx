@@ -1,17 +1,16 @@
-import { Logout, Menu, Search } from "@mui/icons-material";
+import { Logout, Menu } from "@mui/icons-material";
 import {
   Box,
   Button,
   Divider,
   Drawer,
   IconButton,
-  TextField,
   Typography,
   useMediaQuery,
-  useTheme,
+  useTheme
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logout } from "~redux/slices/userSlices";
 import SideBarCategories from "./SideBarCategories/SideBarCategories";
 import SideBarTasks from "./SideBarTasks/SideBarTasks";
@@ -28,25 +27,12 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
   const drawerWidth = 400;
   const collapsedWidth = 150;
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
   };
 
-  const handleSubmitSearch = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const searchValue = formData.get("search") || "";
-    const newParams = new URLSearchParams(searchParams.toString());
-    if (searchValue) {
-      newParams.set("search", searchValue.toString());
-    }
-    if (typeof searchValue === "string") {
-      setSearchParams(newParams);
-    }
-  };
   return (
     <>
       {!isLargeScreen && <Menu onClick={toggleDrawer} sx={{ mt: 7, mx: 4 }} />}
@@ -102,27 +88,6 @@ export default function SideBar({ open, toggleDrawer }: SideBarProps) {
                 <Menu />
               </IconButton>
             </Box>
-
-            <Box
-              component="form"
-              onSubmit={handleSubmitSearch}
-              sx={{ display: "flex", alignItems: "center" }}
-            >
-              <IconButton type="submit">
-                <Search />
-              </IconButton>
-              {open && (
-                <TextField
-                  name="search"
-                  placeholder="Search tasks..."
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                  sx={{ marginRight: 1 }}
-                />
-              )}
-            </Box>
-
             <SideBarTasks open={open} />
             <Divider sx={{ my: 3 }} />
             <SideBarCategories open={open} />

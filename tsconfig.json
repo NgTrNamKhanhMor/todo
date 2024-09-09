@@ -103,9 +103,6 @@
       "~types/*": [
         "src/types/*"
       ],
-      "~data/*": [
-        "src/data/*"
-      ],
       "~layouts/*": [
         "src/layouts/*"
       ],

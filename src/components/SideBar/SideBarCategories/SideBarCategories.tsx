@@ -27,12 +27,8 @@ export default function SideBarCategories({ open }: SideBarCategoriesProps) {
 
   return (
     <>
-      <Typography
-        variant="h6"
-        gutterBottom
-        textAlign={open ? "start" : "center"}
-      >
-        {open ? "Categories" : "Tags"}
+      <Typography variant="h6" gutterBottom>
+        Tags
       </Typography>
       <List>
         <ListItemButton onClick={handleOpenAddCategoryDialog}>

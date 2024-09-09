@@ -1,31 +1,34 @@
-import { LockOutlined } from "@mui/icons-material";
-import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
+import { LockOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Avatar, Box, Button, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { StyledPaper } from "~/styles/Paper.style";
-import { validationSchema } from "~helpers/authValidation";
+import TextInput from "~components/TextInput/TextInput";
+import { authSchema } from "~helpers/authValidation";
 import { login, resetError } from "~redux/slices/userSlices";
 import { AppDispatch, RootState } from "~redux/store";
 
 export default function Login() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { status, error } = useSelector(
-    (state: RootState) => state.user
-  );
+  const { status, error } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     dispatch(resetError());
-  }, []);
+  }, [dispatch]);
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
 
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
-    validationSchema: validationSchema,
+    validationSchema: authSchema,
     onSubmit: (values, { setSubmitting }) => {
       dispatch(login(values))
         .unwrap()
@@ -56,36 +59,32 @@ export default function Login() {
         noValidate
         onSubmit={formik.handleSubmit}
       >
-        <TextField
-          variant="outlined"
+        <TextInput
+          formik={formik}
+          name={"email"}
+          label={"Email Address"}
+          fullWidth
+          autoFocus margin="normal" />
+        <TextInput
+          formik={formik}
+          name={"password"}
+          label={"Password"}
+          type={showPassword ? "text" : "password"}
           margin="normal"
           fullWidth
-          id="email"
-          label="Email Address"
-          name="email"
-          autoComplete="email"
-          autoFocus
-          value={formik.values.email}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.email && Boolean(formik.errors.email)}
-          helperText={formik.touched.email && formik.errors.email}
-        />
-        <TextField
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          name="password"
-          label="Password"
-          type="password"
-          id="password"
-          autoComplete="current-password"
-          value={formik.values.password}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.password && Boolean(formik.errors.password)}
-          helperText={formik.touched.password && formik.errors.password}
-        />
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={handleClickShowPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }} />
         <Button
           type="submit"
           fullWidth
