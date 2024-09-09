@@ -3,12 +3,12 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 import { RootState } from '~/redux/store';
-import { selectCurrentUser } from '~helpers/user';
+import { selectCurrentUserId } from '~helpers/user';
 
 const ProtectedRoute: React.FC = () => {
-    const currentUser = selectCurrentUser();
+    const currentUserId = selectCurrentUserId();
 
-    if (!currentUser) {
+    if (!currentUserId) {
         return <Navigate to="/login" replace />;
     }
 

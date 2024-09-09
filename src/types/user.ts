@@ -6,7 +6,6 @@ export interface User {
 }
 
 export interface UserState {
-  users: User[] | null;
   currentUserId: number | null;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;

@@ -8,7 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import { Category } from "~/types/category";
 import ColoredBox from "~components/ColoredBox/ColoredBox";
 import { getTodosByUserId } from "~helpers/todos";
-import { selectCurrentUser } from "~helpers/user";
+import { selectCurrentUserId } from "~helpers/user";
 
 type SideBarCategoryItemProps = {
   open: boolean;
@@ -19,8 +19,8 @@ export default function SideBarCategoryItem({
   open,
   category,
 }: SideBarCategoryItemProps) {
-  const currentUser = selectCurrentUser();
-  const tasks = getTodosByUserId(currentUser!.id);
+  const currentUserId = selectCurrentUserId();
+  const tasks = getTodosByUserId(currentUserId!);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isCategoryActive = searchParams.get("category") === category.value;

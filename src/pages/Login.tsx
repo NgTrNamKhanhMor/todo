@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { StyledPaper } from "~/styles/Paper.style";
 import TextInput from "~components/TextInput/TextInput";
 import { authSchema } from "~helpers/authValidation";
-import { login, resetError } from "~redux/slices/userSlices";
+import { login, resetUserError } from "~redux/slices/userSlices";
 import { AppDispatch, RootState } from "~redux/store";
 
 export default function Login() {
@@ -16,7 +16,7 @@ export default function Login() {
   const { status, error } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    dispatch(resetError());
+    dispatch(resetUserError());
   }, [dispatch]);
 
   const [showPassword, setShowPassword] = useState(false);

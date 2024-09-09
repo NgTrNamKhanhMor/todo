@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Todo } from "~/types/todo";
 import { todoSchema } from "~helpers/todosValidation";
-import { selectCurrentUser } from "~helpers/user";
+import { selectCurrentUserId } from "~helpers/user";
 import { addTodo, updateTodo } from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
 
@@ -18,7 +18,7 @@ export const useTaskFormik = ({
 }: UseTaskFormikProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const currentUser = selectCurrentUser();
+  const currentUserId = selectCurrentUserId();
 
   const formik = useFormik({
     initialValues: {
@@ -37,7 +37,7 @@ export const useTaskFormik = ({
         category: values.category,
         date: values.date,
         completed: selectedTask?.completed || false,
-        user: currentUser!.id,
+        user: currentUserId!,
       };
 
       if (taskData.id) {
