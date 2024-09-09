@@ -23,6 +23,7 @@ export default function Filters() {
   const [dateFilter, setDateFilter] = useState<Dayjs | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const dateQuery = searchParams.get("date") || "";
+  const [isUpcoming, setIsUpcoming] = useState(false);
 
   const handleSortOrderChange = (event: SelectChangeEvent) => {
     const newValue = event.target.value as string;
@@ -53,7 +54,6 @@ export default function Filters() {
     setSearchParams(newParams);
   };
 
-
   const handleDateChange = (date: Dayjs | null) => {
     setDateFilter(date);
 
@@ -67,9 +67,15 @@ export default function Filters() {
   };
 
   const getDateFromQuery = (dateQuery: string): Dayjs | null => {
+    if (dateQuery === "upcoming") {
+      setIsUpcoming(true);
+    } else {
+      setIsUpcoming(false);
+    }
     if (dateQuery === "today") {
       return dayjs(new Date());
     } else {
+
       const parsedDate = dayjs(dateQuery, "YYYY-MM-DD");
       return parsedDate.isValid() ? parsedDate : null;
     }
@@ -120,10 +126,12 @@ export default function Filters() {
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item xs={12} sm={4} md={3}>
           <MyDatePicker
             selectedDate={dateFilter}
             handleDateChange={handleDateChange}
+            isUpcoming={!!isUpcoming}
           />
         </Grid>
         <Grid item xs={12} sm={4} md={2}>

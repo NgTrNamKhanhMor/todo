@@ -75,7 +75,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
     },
     validationSchema: todoSchema,
     enableReinitialize: true,
-    onSubmit: (values) => {
+    onSubmit: async (values, { resetForm }) => {
       const taskData: Todo = {
         id: selectedTask?.id || 0,
         name: values.name,
@@ -91,6 +91,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
       } else {
         dispatch(addTodo(taskData));
       }
+      resetForm();
       navigate("/");
       closeRightBar();
     },
