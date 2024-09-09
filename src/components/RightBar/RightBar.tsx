@@ -19,7 +19,10 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { categories } from "~/const/categories";
 import { Todo } from "~/types/todo";
+import DateInput from "~components/DateInput/DateInput";
 import DeleteDialog from "~components/DeleteDialog/DeleteDialog";
+import SelectInput from "~components/SelectFilter/SelectFilter";
+import TextInput from "~components/TextInput/TextInput";
 import { todoSchema } from "~helpers/todosValidation";
 import { selectCurrentUser } from "~helpers/user";
 import { addTodo, deleteTodo, updateTodo } from "~redux/slices/todoSlices";
@@ -145,33 +148,8 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
 
         <form onSubmit={formik.handleSubmit}>
           <Box display="flex" flexDirection="column" gap={3} py={3}>
-            <TextField
-              label="Task Name"
-              name="name"
-              variant="outlined"
-              size="small"
-              fullWidth
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.name && Boolean(formik.errors.name)}
-              helperText={formik.touched.name && formik.errors.name}
-            />
-            <TextField
-              label="Task Description"
-              name="description"
-              variant="outlined"
-              size="small"
-              multiline
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.description && Boolean(formik.errors.description)}
-              helperText={formik.touched.description && formik.errors.description}
-              rows={3}
-              fullWidth
-            />
-
+            <TextInput formik={formik} name={"name"} label={"Task Name"} />
+            <TextInput formik={formik} name={"description"} label={"Task Description"} />
             <FormControl
               fullWidth
               error={formik.touched.category && Boolean(formik.errors.category)}
@@ -197,22 +175,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
                 </Typography>
               )}
             </FormControl>
-
-
-            <TextField
-              label="Date"
-              name="date"
-              type="date"
-              variant="outlined"
-              size="small"
-              value={formik.values.date}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.date && Boolean(formik.errors.date)}
-              helperText={formik.touched.date && formik.errors.date}
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-            />
+            <DateInput formik={formik} name="date" label="Date" />
           </Box>
 
           <Box display="flex" justifyContent="space-between" my={2}>

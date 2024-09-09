@@ -1,10 +1,11 @@
 import { LockOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
-import { Avatar, Box, Button, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
+import { Avatar, Box, Button, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { StyledPaper } from "~/styles/Paper.style";
+import TextInput from "~components/TextInput/TextInput";
 import { authSchema } from "~helpers/authValidation";
 import { login, resetError } from "~redux/slices/userSlices";
 import { AppDispatch, RootState } from "~redux/store";
@@ -58,35 +59,19 @@ export default function Login() {
         noValidate
         onSubmit={formik.handleSubmit}
       >
-        <TextField
-          variant="outlined"
-          margin="normal"
+        <TextInput
+          formik={formik}
+          name={"email"}
+          label={"Email Address"}
           fullWidth
-          id="email"
-          label="Email Address"
-          name="email"
-          autoComplete="email"
-          autoFocus
-          value={formik.values.email}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.email && Boolean(formik.errors.email)}
-          helperText={formik.touched.email && formik.errors.email}
-        />
-        <TextField
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          name="password"
-          label="Password"
+          autoFocus margin="normal" />
+        <TextInput
+          formik={formik}
+          name={"password"}
+          label={"Password"}
           type={showPassword ? "text" : "password"}
-          id="password"
-          autoComplete="current-password"
-          value={formik.values.password}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.password && Boolean(formik.errors.password)}
-          helperText={formik.touched.password && formik.errors.password}
+          margin="normal"
+          fullWidth
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -99,8 +84,7 @@ export default function Login() {
                 </IconButton>
               </InputAdornment>
             ),
-          }}
-        />
+          }} />
         <Button
           type="submit"
           fullWidth
