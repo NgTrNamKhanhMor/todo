@@ -21,14 +21,14 @@ function deleteParams(
   setSearchParams(newParams);
 }
 
-export function filterTasksBySort(
+export function sortTasksByDate(
   tasks: Todo[],
-  sortquery: string,
+  sortQuery: string,
   setSearchParams: (params: URLSearchParams) => void,
   searchParams: URLSearchParams
 ): Todo[] {
-  if (sortquery) {
-    switch (sortquery) {
+  if (sortQuery) {
+    switch (sortQuery) {
       case "dateAsc":
         return tasks.sort(
           (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -37,10 +37,6 @@ export function filterTasksBySort(
         return tasks.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-      case "completed":
-        return tasks.filter((task) => task.completed);
-      case "incomplete":
-        return tasks.filter((task) => !task.completed);
       default:
         deleteParams("sort", searchParams, setSearchParams);
         return tasks;
@@ -49,6 +45,28 @@ export function filterTasksBySort(
     return tasks;
   }
 }
+
+export function filterTasksByCompletion(
+  tasks: Todo[],
+  completionQuery: string,
+  setSearchParams: (params: URLSearchParams) => void,
+  searchParams: URLSearchParams
+): Todo[] {
+  if (completionQuery) {
+    switch (completionQuery) {
+      case "true":
+        return tasks.filter((task) => task.completed);
+      case "false":
+        return tasks.filter((task) => !task.completed);
+      default:
+        deleteParams("completed", searchParams, setSearchParams);
+        return tasks;
+    }
+  } else {
+    return tasks;
+  }
+}
+
 export function filterTasksByCategory(
   tasks: Todo[],
   categoryQuery: string,
