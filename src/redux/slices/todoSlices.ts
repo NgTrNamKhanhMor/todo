@@ -1,4 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import { API_URL } from "~/const/system";
 import { Todo } from "~/types/todo";
 
 interface TodoState {
@@ -13,26 +15,36 @@ const initialState: TodoState = {
   error: null,
 };
 
+const TODO_URL = API_URL + "/todo";
+
+export const fetchTodos = createAsyncThunk("todos/fetchTodos", async () => {
+  const response = await axios.get(TODO_URL);
+  return response.data;
+});
+
 export const addTodo = createAsyncThunk(
   "todos/addTodo",
   async (newTodo: Todo) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return newTodo;
+    const response = await axios.post(TODO_URL, newTodo);
+    return response.data;
   }
 );
 
 export const updateTodo = createAsyncThunk(
   "todos/updateTodo",
   async (updatedTodo: Todo) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return updatedTodo;
+    const response = await axios.put(
+      `${TODO_URL}/${updatedTodo.id}`,
+      updatedTodo
+    );
+    return response.data;
   }
 );
 
 export const deleteTodo = createAsyncThunk(
   "todos/deleteTodo",
   async (todoId: number) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await axios.delete(`${TODO_URL}/${todoId}`);
     return todoId;
   }
 );
@@ -47,31 +59,42 @@ const todoSlice = createSlice({
         state.todos[index].completed = !state.todos[index].completed;
       }
     },
+    resetTodoError: (state) => {
+       state.status = "idle";
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
+      // Fetch Todos
+      .addCase(fetchTodos.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(fetchTodos.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.todos = action.payload;
+      })
+      .addCase(fetchTodos.rejected, (state, action) => {
+        state.status = "failed";
+        state.error =  "Failed to fetch todos";
+      })
+
+      // Add Todo
       .addCase(addTodo.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
       .addCase(addTodo.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const { id, ...rest } = action.payload;
-        const newId =
-          id ||
-          (state.todos.length
-            ? Math.max(...state.todos.map((todo) => todo.id)) + 1
-            : 1);
-        const newTodoWithId: Todo = {
-          id: newId,
-          ...rest,
-        };
-        state.todos.push(newTodoWithId);
+        state.todos.push(action.payload);
       })
       .addCase(addTodo.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message || "Failed to fetch todos";
+        state.error =  "Failed to add todo";
       })
+
+      // Update Todo
       .addCase(updateTodo.pending, (state) => {
         state.status = "loading";
       })
@@ -86,8 +109,10 @@ const todoSlice = createSlice({
       })
       .addCase(updateTodo.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message || "Failed to fetch todos";
+        state.error =  "Failed to update todo";
       })
+
+      // Delete Todo
       .addCase(deleteTodo.pending, (state) => {
         state.status = "loading";
       })
@@ -97,10 +122,10 @@ const todoSlice = createSlice({
       })
       .addCase(deleteTodo.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message || "Failed to fetch todos";
+        state.error = "Failed to delete todo";
       });
   },
 });
 
-export const { toggleComplete } = todoSlice.actions;
+export const { toggleComplete, resetTodoError } = todoSlice.actions;
 export default todoSlice.reducer;

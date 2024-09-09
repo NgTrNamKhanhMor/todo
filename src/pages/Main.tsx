@@ -1,21 +1,30 @@
-// src/components/Main/Main.tsx
 import { Box, Pagination, useTheme } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ITEMSPERPAGE } from "~/const/system";
 import { useFilteredTasks } from "~/hooks/useFilterTodos";
 import ControlPanel from "~components/ControlPanel/ControlPanel";
 import NoTodo from "~components/NoTodo/NoTodo";
 import TodoList from "~components/TodoList/TodoList";
 import TodoListSkeleton from "~components/TodoListSkeleton/TodoListSkeleton";
-import { getTodosByUserId } from "~helpers/todos";
-import { selectCurrentUser } from "~helpers/user";
-import { RootState } from "~redux/store";
+import { selectCurrentUserId } from "~helpers/user";
+import { fetchTodos } from "~redux/slices/todoSlices";
+import { AppDispatch, RootState } from "~redux/store";
 import MainHeader from "../components/MainHeader/MainHeader";
+import { ErrorSnackBar } from "~components/ErrorSnackbar/ErrorSnackbar";
 
 export default function Main() {
-  const currentUser = selectCurrentUser();
-  const tasks = getTodosByUserId(currentUser!.id);
-  const status = useSelector((state: RootState) => state.todos.status);
+  const dispatch = useDispatch<AppDispatch>();
+  const currentUserId = selectCurrentUserId();
+
+  useEffect(() => {
+    if (currentUserId) {
+      dispatch(fetchTodos());
+    }
+  }, [dispatch, currentUserId]);
+
+  const { todos, status } = useSelector((state: RootState) => state.todos);
+  const userTodos = todos.filter(todo => todo.user == currentUserId);
 
   const {
     finalTasks,
@@ -24,47 +33,50 @@ export default function Main() {
     currentPage,
     isFiltering,
     handlePageChange,
-  } = useFilteredTasks(tasks);
+  } = useFilteredTasks(userTodos);
 
   const theme = useTheme();
   return (
-    <Box
-      component="main"
-      pt={4}
-      px={{ xs: 2, md: 7 }}
-      display="flex"
-      flexDirection="column"
-      flexGrow={1}
-      minHeight="100vh"
-      sx={{
-        transition: theme.transitions.create(["margin-left", "margin-right"], {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.standard,
-        }),
-        overflowX: "hidden",
-      }}
-    >
-      <MainHeader tasksCount={filteredTotal} />
-      <ControlPanel />
+    <>
+      <Box
+        component="main"
+        pt={4}
+        px={{ xs: 2, md: 7 }}
+        display="flex"
+        flexDirection="column"
+        flexGrow={1}
+        minHeight="100vh"
+        sx={{
+          transition: theme.transitions.create(["margin-left", "margin-right"], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.standard,
+          }),
+          overflowX: "hidden",
+        }}
+      >
+        <MainHeader tasksCount={filteredTotal} />
+        <ControlPanel />
 
-      <Box flexGrow={1}>
-        {status === "loading" || isFiltering ? (
-          <TodoListSkeleton />
-        ) : finalTasks.length > 0 ? (
-          <TodoList tasks={finalTasks} />
-        ) : (
-          <NoTodo />
-        )}
-      </Box>
+        <Box flexGrow={1}>
+          {status === "loading" || isFiltering ? (
+            <TodoListSkeleton />
+          ) : finalTasks.length > 0 ? (
+            <TodoList tasks={finalTasks} />
+          ) : (
+            <NoTodo />
+          )}
+        </Box>
 
-      <Box mt="auto" width={1} display="flex" justifyContent="center" pb={2}>
-        <Pagination
-          count={Math.ceil(totalTasks / ITEMSPERPAGE)}
-          page={currentPage}
-          color="primary"
-          onChange={handlePageChange}
-        />
+        <Box mt="auto" width={1} display="flex" justifyContent="center" pb={2}>
+          <Pagination
+            count={Math.ceil(totalTasks / ITEMSPERPAGE)}
+            page={currentPage}
+            color="primary"
+            onChange={handlePageChange}
+          />
+        </Box>
       </Box>
-    </Box>
+      <ErrorSnackBar />
+    </>
   );
 }
