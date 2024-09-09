@@ -85,19 +85,42 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "paths": {
-      "~assets/*": ["src/assets/*"],
-      "~components/*": ["src/components/*"],
-      "~helpers/*": ["src/helpers/*"],
-      "~redux/*": ["src/redux/*"],
-      "~/*": ["src/*"],
-      "~types/*": ["src/types/*"],
-      "~layouts/*": ["src/layouts/*"],
-      "~pages/*": ["src/pages/*"],
-      "~styles/*": ["src/styles/*"],
-      "~guard/*": ["src/guard/*"],
-      "~const/*": ["src/const/*"],
-      "~hooks/*": ["src/hooks/*"],
-      "~Filters/*": ["src/components/Filters/*"]
+      "~assets/*": [
+        "src/assets/*"
+      ],
+      "~components/*": [
+        "src/components/*"
+      ],
+      "~helpers/*": [
+        "src/helpers/*"
+      ],
+      "~redux/*": [
+        "src/redux/*"
+      ],
+      "~/*": [
+        "src/*"
+      ],
+      "~types/*": [
+        "src/types/*"
+      ],
+      "~layouts/*": [
+        "src/layouts/*"
+      ],
+      "~pages/*": [
+        "src/pages/*"
+      ],
+      "~styles/*": [
+        "src/styles/*"
+      ],
+      "~guard/*": [
+        "src/guard/*"
+      ],
+      "~const/*": [
+        "src/const/*"
+      ],
+      "~hooks/*": [
+        "src/hooks/*"
+      ]
     }
   }
 }
