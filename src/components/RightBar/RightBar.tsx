@@ -8,24 +8,19 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
   Typography,
   useMediaQuery,
-  useTheme,
+  useTheme
 } from "@mui/material";
-import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { categories } from "~/const/categories";
+import { useTaskFormik } from "~/hooks/useTaskFormik";
 import { Todo } from "~/types/todo";
 import DateInput from "~components/DateInput/DateInput";
 import DeleteDialog from "~components/DeleteDialog/DeleteDialog";
-import SelectInput from "~components/SelectFilter/SelectFilter";
 import TextInput from "~components/TextInput/TextInput";
-import { todoSchema } from "~helpers/todosValidation";
-import { selectCurrentUser } from "~helpers/user";
-import { addTodo, deleteTodo, updateTodo } from "~redux/slices/todoSlices";
+import { deleteTodo } from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
 
 type RightBarProps = {
@@ -36,8 +31,6 @@ type RightBarProps = {
 
 export default function RightBar({ open, closeRightBar, selectedTask }: RightBarProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-  const currentUser = selectCurrentUser();
   const theme = useTheme();
   const drawerWidth = 400;
   const collapsedWidth = 150;
@@ -69,36 +62,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
     closeRightBar();
   };
 
-  const formik = useFormik({
-    initialValues: {
-      name: selectedTask?.name || "",
-      description: selectedTask?.description || "",
-      category: selectedTask?.category || "",
-      date: selectedTask?.date || "",
-    },
-    validationSchema: todoSchema,
-    enableReinitialize: true,
-    onSubmit: async (values, { resetForm }) => {
-      const taskData: Todo = {
-        id: selectedTask?.id || 0,
-        name: values.name,
-        description: values.description,
-        category: values.category,
-        date: values.date,
-        completed: selectedTask?.completed || false,
-        user: currentUser!.id,
-      };
-
-      if (taskData.id) {
-        dispatch(updateTodo(taskData));
-      } else {
-        dispatch(addTodo(taskData));
-      }
-      resetForm();
-      navigate("/");
-      closeRightBar();
-    },
-  });
+  const formik = useTaskFormik({ selectedTask, closeRightBar });
 
   return (
     <Drawer
