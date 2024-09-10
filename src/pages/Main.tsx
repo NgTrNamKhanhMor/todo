@@ -1,16 +1,22 @@
 import { Box, Pagination, useTheme } from "@mui/material";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ITEMSPERPAGE } from "~/const/system";
 import { useFilteredTasks } from "~/hooks/useFilterTodos";
-import useGetTodosByUserId from "~/hooks/useGetTodosByUserId";
 import ControlPanel from "~components/ControlPanel/ControlPanel";
 import { ErrorSnackBar } from "~components/ErrorSnackbar/ErrorSnackbar";
 import NoTodo from "~components/NoTodo/NoTodo";
 import TodoList from "~components/TodoList/TodoList";
 import TodoListSkeleton from "~components/TodoListSkeleton/TodoListSkeleton";
+import { selectCurrentUserId } from "~helpers/user";
+import { fetchTodos } from "~redux/slices/todoSlices";
+import { AppDispatch, RootState } from "~redux/store";
 import MainHeader from "../components/MainHeader/MainHeader";
 
 export default function Main() {
-  const { userTodos, status } = useGetTodosByUserId();
+  const dispatch = useDispatch<AppDispatch>();
+  const currentUserId = selectCurrentUserId();
+  const { todos, status } = useSelector((state: RootState) => state.todos);
   const {
     finalTasks,
     filteredTotal,
@@ -18,8 +24,11 @@ export default function Main() {
     currentPage,
     isFiltering,
     handlePageChange,
-  } = useFilteredTasks(userTodos);
+  } = useFilteredTasks(todos);
 
+  useEffect(() => {
+    dispatch(fetchTodos(currentUserId!));
+  }, [dispatch]);
   const theme = useTheme();
   return (
     <>

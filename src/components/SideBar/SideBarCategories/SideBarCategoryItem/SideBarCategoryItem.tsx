@@ -4,10 +4,11 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
+import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import useGetTodosByUserId from "~/hooks/useGetTodosByUserId";
 import { Category } from "~/types/category";
 import ColoredBox from "~components/ColoredBox/ColoredBox";
+import { RootState } from "~redux/store";
 
 type SideBarCategoryItemProps = {
   open: boolean;
@@ -18,7 +19,7 @@ export default function SideBarCategoryItem({
   open,
   category,
 }: SideBarCategoryItemProps) {
-  const { userTodos, status } = useGetTodosByUserId();
+  const { todos, status } = useSelector((state: RootState) => state.todos);
   const [searchParams, setSearchParams] = useSearchParams();
   const isCategoryActive = searchParams.get("category") === category.value;
 
@@ -33,7 +34,7 @@ export default function SideBarCategoryItem({
   };
 
   const getTodayTasksCount = () => {
-    return userTodos.filter((todo) => todo.category === category.value).length;
+    return todos.filter((todo) => todo.category === category.value).length;
   };
 
   return (

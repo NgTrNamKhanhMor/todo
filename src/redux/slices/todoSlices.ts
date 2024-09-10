@@ -19,10 +19,16 @@ const initialState: TodoState = {
 const TODO_URL = API_URL + "/todo";
 
 // Existing async thunks
-export const fetchTodos = createAsyncThunk("todos/fetchTodos", async () => {
-  const response = await axios.get(TODO_URL);
-  return response.data;
-});
+export const fetchTodos = createAsyncThunk(
+  "todos/fetchTodos",
+  async (currentUserId: number) => {
+    const response = await axios.get(TODO_URL);
+    const userTodos = response.data.filter(
+      (todo: Todo) => todo.user === currentUserId
+    );
+    return userTodos;
+  }
+);
 
 export const addTodo = createAsyncThunk(
   "todos/addTodo",
