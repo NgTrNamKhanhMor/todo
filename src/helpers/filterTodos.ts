@@ -27,14 +27,16 @@ export function sortTasksByDate(
   setSearchParams: (params: URLSearchParams) => void,
   searchParams: URLSearchParams
 ): Todo[] {
+  const tasksCopy = [...tasks];
+
   if (sortQuery) {
     switch (sortQuery) {
       case "dateAsc":
-        return tasks.sort(
+        return tasksCopy.sort(
           (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
         );
       case "dateDesc":
-        return tasks.sort(
+        return tasksCopy.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
       default:

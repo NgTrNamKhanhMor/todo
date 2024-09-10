@@ -21,7 +21,6 @@ function SelectInput<T>({ formik, name, label, data }: SelectInputProps<T>) {
                 name={name as string}
                 value={formik.values[name] as string}
                 onChange={(event) => {
-                    console.log(event)
                     event.preventDefault();
                     formik.setFieldValue(name as string, event.target.value);
                 }}
