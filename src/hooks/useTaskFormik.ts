@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Todo } from "~/types/todo";
 import { todoSchema } from "~helpers/todosValidation";
-import { addTodo, updateTodo } from "~redux/slices/todoSlices";
+import { addTodo, fetchTodos, updateTodo } from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
 import { useGetCurrentUserId } from "./useGetCurrentUserId";
 
@@ -40,14 +40,21 @@ export const useTaskFormik = ({
         user: currentUserId!,
       };
 
-      if (taskData.id) {
-        dispatch(updateTodo(taskData));
-      } else {
-        dispatch(addTodo(taskData));
+      try {
+        if (taskData.id) {
+          await dispatch(updateTodo(taskData)).unwrap();
+        } else {
+          await dispatch(addTodo(taskData)).unwrap();
+        }
+
+        await dispatch(fetchTodos(currentUserId!)).unwrap();
+
+        resetForm();
+        navigate("/");
+        closeRightBar();
+      } catch (error) {
+        console.error("Failed to save task or fetch todos:", error);
       }
-      resetForm();
-      navigate("/");
-      closeRightBar();
     },
   });
 

@@ -1,21 +1,26 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { API_URL } from "~/const/system"; // Mock API URL or local storage
-import { User, UserState } from "~/types/user";
+import { apiEndpoints } from "~/api/endpoints";
+import { User } from "~/types/user";
+export interface UserState {
+  currentUserId: number | null;
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null;
+  info: string | null;
+}
 
 const initialState: UserState = {
   currentUserId: null,
   status: "idle",
   error: null,
+  info: null,
 };
-
-const USER_URL = API_URL + "/users";
 
 export const login = createAsyncThunk(
   "user/login",
   async (userCredentials: { email: string; password: string }) => {
     try {
-      const response = await axios.get(`${USER_URL}`);
+      const response = await axios.get(apiEndpoints.user.getAll);
       const users: User[] = response.data;
 
       const user = users.find(
@@ -42,7 +47,7 @@ export const register = createAsyncThunk(
   "user/register",
   async (userDetails: { name: string; email: string; password: string }) => {
     try {
-      const response = await axios.get(`${USER_URL}`);
+      const response = await axios.get(apiEndpoints.user.getAll);
       const users: User[] = response.data;
 
       const userExists = users.some((user) => user.email === userDetails.email);
@@ -56,7 +61,7 @@ export const register = createAsyncThunk(
         ...userDetails,
       };
 
-      await axios.post(`${USER_URL}`, newUser);
+      await axios.post(apiEndpoints.user.register, newUser);
 
       return newUser;
     } catch (error: any) {
@@ -71,8 +76,6 @@ export const register = createAsyncThunk(
   }
 );
 
-
-// User slice
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -86,6 +89,12 @@ const userSlice = createSlice({
       state.status = "idle";
       state.error = null;
     },
+    setUserInfo: (state, action) => {
+      state.info = action.payload;
+    },
+    clearUserInfo: (state) => {
+      state.info = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -97,6 +106,7 @@ const userSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.currentUserId = action.payload.id;
+        state.info = "Login successfully";
       })
       .addCase(login.rejected, (state, action) => {
         state.status = "failed";
@@ -110,6 +120,7 @@ const userSlice = createSlice({
       .addCase(register.fulfilled, (state, action: PayloadAction<User>) => {
         state.status = "succeeded";
         state.currentUserId = action.payload.id;
+        state.info = "Register successfully";
       })
       .addCase(register.rejected, (state, action) => {
         state.status = "failed";
@@ -118,6 +129,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { logout, resetUserError } = userSlice.actions;
+export const { logout, resetUserError, setUserInfo, clearUserInfo } =
+  userSlice.actions;
 
 export default userSlice.reducer;
