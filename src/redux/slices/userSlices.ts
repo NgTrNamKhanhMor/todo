@@ -1,62 +1,81 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { User, UserState } from "~/types/user";
+import axios from "axios";
+import { apiEndpoints } from "~/api/endpoints";
+import { User } from "~/types/user";
+export interface UserState {
+  currentUserId: number | null;
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null;
+  info: string | null;
+}
 
 const initialState: UserState = {
-  users: [],
   currentUserId: null,
   status: "idle",
   error: null,
+  info: null,
 };
 
-// Thunks
 export const login = createAsyncThunk(
   "user/login",
-  async (
-    userCredentials: { email: string; password: string },
-    { getState }
-  ) => {
-    const state = getState() as { user: UserState };
-    if (state.user.users) {
-      const user = state.user.users.find(
+  async (userCredentials: { email: string; password: string }) => {
+    try {
+      const response = await axios.get(apiEndpoints.user.getAll);
+      const users: User[] = response.data;
+
+      const user = users.find(
         (user) =>
           user.email === userCredentials.email &&
           user.password === userCredentials.password
       );
+
       if (user) {
         return user;
       } else {
-        throw new Error("Wrong email or password");
+        throw new Error("Invalid email or password");
       }
-    } else {
-      throw new Error("Wrong email or password");
+    } catch (error: any) {
+      if (error.message) {
+        throw error;
+      }
+      throw new Error(error.response?.data?.message || "Login failed");
     }
   }
 );
 
 export const register = createAsyncThunk(
   "user/register",
-  async (
-    userDetails: { name: string; email: string; password: string },
-    { getState }
-  ) => {
-    const state = getState() as { user: UserState };
-    const userExists = state.user.users?.some(
-      (user) => user.email === userDetails.email
-    );
+  async (userDetails: { name: string; email: string; password: string }) => {
+    try {
+      const response = await axios.get(apiEndpoints.user.getAll);
+      const users: User[] = response.data;
 
-    if (userExists) {
-      throw new Error("User already exists");
-    } else {
+      const userExists = users.some((user) => user.email === userDetails.email);
+
+      if (userExists) {
+        throw new Error("User with this email already exists");
+      }
+
       const newUser: User = {
-        id: state.user.users ? state.user.users.length + 1 : 1,
+        id: users.length + 1,
         ...userDetails,
       };
+
+      await axios.post(apiEndpoints.user.register, newUser);
+
       return newUser;
+    } catch (error: any) {
+      if (error.message) {
+        throw error;
+      }
+      throw new Error(
+        error.response?.data?.message ||
+          "Registration failed due to server error"
+      );
     }
   }
 );
 
-// Slice
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -66,13 +85,20 @@ const userSlice = createSlice({
       state.status = "idle";
       state.error = null;
     },
-    resetError: (state) => {
+    resetUserError: (state) => {
       state.status = "idle";
       state.error = null;
+    },
+    setUserInfo: (state, action) => {
+      state.info = action.payload;
+    },
+    clearUserInfo: (state) => {
+      state.info = null;
     },
   },
   extraReducers: (builder) => {
     builder
+      // Login cases
       .addCase(login.pending, (state) => {
         state.status = "loading";
         state.error = null;
@@ -80,19 +106,21 @@ const userSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.currentUserId = action.payload.id;
+        state.info = "Login successfully";
       })
       .addCase(login.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || "Failed to login";
       })
+      //Register cases
       .addCase(register.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
       .addCase(register.fulfilled, (state, action: PayloadAction<User>) => {
         state.status = "succeeded";
-        state.users?.push(action.payload);
         state.currentUserId = action.payload.id;
+        state.info = "Register successfully";
       })
       .addCase(register.rejected, (state, action) => {
         state.status = "failed";
@@ -101,6 +129,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { logout, resetError } = userSlice.actions;
+export const { logout, resetUserError, setUserInfo, clearUserInfo } =
+  userSlice.actions;
 
 export default userSlice.reducer;

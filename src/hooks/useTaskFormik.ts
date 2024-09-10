@@ -3,9 +3,10 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Todo } from "~/types/todo";
 import { todoSchema } from "~helpers/todosValidation";
-import { selectCurrentUser } from "~helpers/user";
-import { addTodo, updateTodo } from "~redux/slices/todoSlices";
+import { showSnackbar } from "~redux/slices/snackbarSlices";
+import { addTodo, fetchTodos, updateTodo } from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
+import { useGetCurrentUserId } from "./useGetCurrentUserId";
 
 type UseTaskFormikProps = {
   selectedTask: Todo | null;
@@ -18,7 +19,7 @@ export const useTaskFormik = ({
 }: UseTaskFormikProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const currentUser = selectCurrentUser();
+  const currentUserId = useGetCurrentUserId();
 
   const formik = useFormik({
     initialValues: {
@@ -37,17 +38,40 @@ export const useTaskFormik = ({
         category: values.category,
         date: values.date,
         completed: selectedTask?.completed || false,
-        user: currentUser!.id,
+        user: currentUserId!,
       };
 
-      if (taskData.id) {
-        dispatch(updateTodo(taskData));
-      } else {
-        dispatch(addTodo(taskData));
+      try {
+        if (taskData.id) {
+          await dispatch(updateTodo(taskData)).unwrap();
+          dispatch(
+            showSnackbar({
+              message: "Task updated successfully",
+              severity: "success",
+            })
+          );
+        } else {
+          await dispatch(addTodo(taskData)).unwrap();
+          dispatch(
+            showSnackbar({
+              message: "Task added successfully",
+              severity: "success",
+            })
+          );
+        }
+
+        await dispatch(fetchTodos(currentUserId!)).unwrap();
+        resetForm();
+        navigate("/");
+        closeRightBar();
+      } catch (error) {
+        dispatch(
+          showSnackbar({
+            message: "Failed to save task. Please try again.",
+            severity: "error",
+          })
+        );
       }
-      resetForm();
-      navigate("/");
-      closeRightBar();
     },
   });
 

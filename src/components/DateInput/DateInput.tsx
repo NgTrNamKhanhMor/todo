@@ -1,4 +1,5 @@
 import { TextField, TextFieldProps } from '@mui/material';
+import dayjs from 'dayjs';
 import { FormikProps } from 'formik';
 
 type DateInputProps<T> = {
@@ -8,6 +9,8 @@ type DateInputProps<T> = {
 } & TextFieldProps;
 
 function DateInput<T>({ formik, name, label, ...rest }: DateInputProps<T>) {
+    const value = formik.values[name] as string;
+    const formattedValue = value ? dayjs(value).format('YYYY-MM-DD') : '';
     return (
         <TextField
             label={label}
@@ -16,7 +19,7 @@ function DateInput<T>({ formik, name, label, ...rest }: DateInputProps<T>) {
             variant="outlined"
             size="medium"
             fullWidth
-            value={formik.values[name] as string}
+            value={formattedValue}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={formik.touched[name] && Boolean(formik.errors[name] as string)}

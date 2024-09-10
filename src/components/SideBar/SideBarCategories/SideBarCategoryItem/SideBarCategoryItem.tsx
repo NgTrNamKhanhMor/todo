@@ -5,10 +5,9 @@ import {
   ListItemText,
 } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
+import { useGetTodos } from "~/hooks/useGetTodos";
 import { Category } from "~/types/category";
 import ColoredBox from "~components/ColoredBox/ColoredBox";
-import { getTodosByUserId } from "~helpers/todos";
-import { selectCurrentUser } from "~helpers/user";
 
 type SideBarCategoryItemProps = {
   open: boolean;
@@ -19,10 +18,8 @@ export default function SideBarCategoryItem({
   open,
   category,
 }: SideBarCategoryItemProps) {
-  const currentUser = selectCurrentUser();
-  const tasks = getTodosByUserId(currentUser!.id);
+  const { todos, status } = useGetTodos();
   const [searchParams, setSearchParams] = useSearchParams();
-
   const isCategoryActive = searchParams.get("category") === category.value;
 
   const handleFilterCategory = () => {
@@ -36,7 +33,7 @@ export default function SideBarCategoryItem({
   };
 
   const getTodayTasksCount = () => {
-    return tasks.filter((task) => task.category === category.value).length;
+    return todos.filter((todo) => todo.category === category.value).length;
   };
 
   return (

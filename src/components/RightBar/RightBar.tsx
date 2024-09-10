@@ -2,6 +2,7 @@ import { Close } from "@mui/icons-material";
 import {
   Box,
   Button,
+  CircularProgress,
   Drawer,
   FormControl,
   IconButton,
@@ -15,12 +16,14 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { categories } from "~/const/categories";
+import { useGetCurrentUserId } from "~/hooks/useGetCurrentUserId";
 import { useTaskFormik } from "~/hooks/useTaskFormik";
 import { Todo } from "~/types/todo";
 import DateInput from "~components/DateInput/DateInput";
 import DeleteDialog from "~components/DeleteDialog/DeleteDialog";
 import TextInput from "~components/TextInput/TextInput";
-import { deleteTodo } from "~redux/slices/todoSlices";
+import { showSnackbar } from "~redux/slices/snackbarSlices";
+import { deleteTodo, fetchTodos } from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
 
 type RightBarProps = {
@@ -31,6 +34,7 @@ type RightBarProps = {
 
 export default function RightBar({ open, closeRightBar, selectedTask }: RightBarProps) {
   const dispatch = useDispatch<AppDispatch>();
+  const currentUserId = useGetCurrentUserId();
   const theme = useTheme();
   const drawerWidth = 400;
   const collapsedWidth = 150;
@@ -54,13 +58,29 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
   const handleCloseDeleteTaskDialog = () => {
     setDeleteTaskOpen(false);
   };
-
-  const handleDeleteTask = () => {
+  const handleDeleteTask = async () => {
     const taskId = selectedTask!.id;
-    dispatch(deleteTodo(taskId));
-    setDeleteTaskOpen(false);
-    closeRightBar();
+    try {
+      await dispatch(deleteTodo(taskId)).unwrap();
+      await dispatch(fetchTodos(currentUserId!)).unwrap();
+
+      dispatch(
+        showSnackbar({ message: "Task deleted successfully", severity: "success" })
+      );
+
+      setDeleteTaskOpen(false);
+      closeRightBar();
+    } catch (error) {
+      dispatch(
+        showSnackbar({
+          message: "Failed to delete task. Please try again.",
+          severity: "error",
+        })
+      );
+      console.error("Failed to delete task or fetch todos:", error);
+    }
   };
+
 
   const formik = useTaskFormik({ selectedTask, closeRightBar });
 
@@ -105,7 +125,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
           <Typography variant="h5" textTransform="uppercase">
             {header}
           </Typography>
-          <IconButton size="small" onClick={closeRightBar}>
+          <IconButton size="small" onClick={closeRightBar} >
             <Close />
           </IconButton>
         </Box>
@@ -147,6 +167,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
               <Button
                 variant="outlined"
                 color="error"
+                disabled={formik.isSubmitting}
                 onClick={handleOpenDeleteTaskDialog}
               >
                 Delete Task
@@ -154,8 +175,22 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
             ) : (
               <Box />
             )}
-            <Button type="submit" variant="contained" color="primary">
-              {selectedTask ? "Save Task" : "Add Task"}
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={formik.isSubmitting}
+            >
+              {formik.isSubmitting ? (
+                <>
+                  <CircularProgress size={20} sx={{ mr: 1 }} />
+                  Saving
+                </>
+              ) : selectedTask ? (
+                "Save Task"
+              ) : (
+                "Add Task"
+              )}
             </Button>
           </Box>
         </form>
