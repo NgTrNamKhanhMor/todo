@@ -4,11 +4,10 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { useGetTodos } from "~/hooks/useGetTodos";
 import { Category } from "~/types/category";
 import ColoredBox from "~components/ColoredBox/ColoredBox";
-import { RootState } from "~redux/store";
 
 type SideBarCategoryItemProps = {
   open: boolean;
@@ -19,7 +18,7 @@ export default function SideBarCategoryItem({
   open,
   category,
 }: SideBarCategoryItemProps) {
-  const { todos, status } = useSelector((state: RootState) => state.todos);
+  const { todos, status } = useGetTodos();
   const [searchParams, setSearchParams] = useSearchParams();
   const isCategoryActive = searchParams.get("category") === category.value;
 

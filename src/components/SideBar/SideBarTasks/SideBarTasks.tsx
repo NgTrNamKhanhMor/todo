@@ -7,9 +7,8 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { RootState } from "~redux/store";
+import { useGetTodos } from "~/hooks/useGetTodos";
 
 type SideBarTasksProps = {
   open: boolean;
@@ -20,7 +19,7 @@ export default function SideBarTasks({ open }: SideBarTasksProps) {
   const todayStr = new Date().toISOString().split("T")[0];
   const isTodayActive = searchParams.get("date") === "today";
   const isUpcomingActive = searchParams.get("date") === "upcoming";
-  const { todos, status } = useSelector((state: RootState) => state.todos);
+  const { todos, status } = useGetTodos();
 
   const getTodayTasksCount = () => {
     return todos.filter((todo) => {

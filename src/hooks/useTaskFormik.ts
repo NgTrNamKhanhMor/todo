@@ -3,9 +3,9 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Todo } from "~/types/todo";
 import { todoSchema } from "~helpers/todosValidation";
-import { selectCurrentUserId } from "~helpers/user";
 import { addTodo, updateTodo } from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
+import { useGetCurrentUserId } from "./useGetCurrentUserId";
 
 type UseTaskFormikProps = {
   selectedTask: Todo | null;
@@ -18,7 +18,7 @@ export const useTaskFormik = ({
 }: UseTaskFormikProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const currentUserId = selectCurrentUserId();
+  const currentUserId = useGetCurrentUserId();
 
   const formik = useFormik({
     initialValues: {
