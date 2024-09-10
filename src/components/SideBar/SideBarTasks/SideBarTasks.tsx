@@ -1,3 +1,4 @@
+import { FormatListBulleted, KeyboardDoubleArrowRight } from "@mui/icons-material";
 import {
   Chip,
   List,
@@ -6,13 +7,7 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { AppDispatch, RootState } from "~redux/store";
-import { FormatListBulleted, KeyboardDoubleArrowRight } from "@mui/icons-material";
-import { selectCurrentUserId } from "~helpers/user";
-import { useEffect } from "react";
-import { fetchTodos } from "~redux/slices/todoSlices";
 import useGetTodosByUserId from "~/hooks/useGetTodosByUserId";
 
 type SideBarTasksProps = {
@@ -26,7 +21,7 @@ export default function SideBarTasks({ open }: SideBarTasksProps) {
   const isUpcomingActive = searchParams.get("date") === "upcoming";
 
   const { userTodos, status } = useGetTodosByUserId();
- 
+
   const getTodayTasksCount = () => {
     return userTodos.filter((task) => {
       const taskDate = new Date(task.date).toISOString().split("T")[0];

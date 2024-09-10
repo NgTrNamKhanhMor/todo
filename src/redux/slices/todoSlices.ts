@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API_URL } from "~/const/system";
 import { Todo } from "~/types/todo";
+import { RootState } from "~redux/store";
 
 interface TodoState {
   todos: Todo[];
@@ -17,6 +18,7 @@ const initialState: TodoState = {
 
 const TODO_URL = API_URL + "/todo";
 
+// Existing async thunks
 export const fetchTodos = createAsyncThunk("todos/fetchTodos", async () => {
   const response = await axios.get(TODO_URL);
   return response.data;
@@ -49,18 +51,39 @@ export const deleteTodo = createAsyncThunk(
   }
 );
 
+export const toggleComplete = createAsyncThunk(
+  "todos/toggleComplete",
+  async (todoId: number, { getState, dispatch }) => {
+    const state = getState() as RootState;
+    const todo = state.todos.todos.find((todo) => todo.id === todoId);
+
+    if (todo) {
+      dispatch(todoSlice.actions.toggleCompleteOptimistic(todoId));
+
+      try {
+        await axios.put(`${TODO_URL}/${todoId}`, {
+          completed: !todo.completed,
+        });
+      } catch (error) {
+        dispatch(todoSlice.actions.toggleCompleteOptimistic(todoId));
+        throw error;
+      }
+    }
+  }
+);
+
 const todoSlice = createSlice({
   name: "todos",
   initialState,
   reducers: {
-    toggleComplete: (state, action) => {
-      const index = state.todos.findIndex((todo) => todo.id === action.payload);
-      if (index !== -1) {
-        state.todos[index].completed = !state.todos[index].completed;
+    toggleCompleteOptimistic: (state, action) => {
+      const todo = state.todos.find((todo) => todo.id === action.payload);
+      if (todo) {
+        todo.completed = !todo.completed;
       }
     },
     resetTodoError: (state) => {
-       state.status = "idle";
+      state.status = "idle";
       state.error = null;
     },
   },
@@ -75,9 +98,9 @@ const todoSlice = createSlice({
         state.status = "succeeded";
         state.todos = action.payload;
       })
-      .addCase(fetchTodos.rejected, (state, action) => {
+      .addCase(fetchTodos.rejected, (state) => {
         state.status = "failed";
-        state.error =  "Failed to fetch todos";
+        state.error = "Failed to fetch todos";
       })
 
       // Add Todo
@@ -89,9 +112,9 @@ const todoSlice = createSlice({
         state.status = "succeeded";
         state.todos.push(action.payload);
       })
-      .addCase(addTodo.rejected, (state, action) => {
+      .addCase(addTodo.rejected, (state) => {
         state.status = "failed";
-        state.error =  "Failed to add todo";
+        state.error = "Failed to add todo";
       })
 
       // Update Todo
@@ -107,9 +130,9 @@ const todoSlice = createSlice({
           state.todos[index] = action.payload;
         }
       })
-      .addCase(updateTodo.rejected, (state, action) => {
+      .addCase(updateTodo.rejected, (state) => {
         state.status = "failed";
-        state.error =  "Failed to update todo";
+        state.error = "Failed to update todo";
       })
 
       // Delete Todo
@@ -120,12 +143,21 @@ const todoSlice = createSlice({
         state.status = "succeeded";
         state.todos = state.todos.filter((todo) => todo.id !== action.payload);
       })
-      .addCase(deleteTodo.rejected, (state, action) => {
+      .addCase(deleteTodo.rejected, (state) => {
         state.status = "failed";
         state.error = "Failed to delete todo";
+      })
+      // Toggle Complete
+      .addCase(toggleComplete.fulfilled, (state, action) => {
+        state.status = "succeeded";
+      })
+
+      .addCase(toggleComplete.rejected, (state) => {
+        state.status = "failed";
+        state.error = "Failed to update todo completion status";
       });
   },
 });
 
-export const { toggleComplete, resetTodoError } = todoSlice.actions;
+export const { resetTodoError } = todoSlice.actions;
 export default todoSlice.reducer;
