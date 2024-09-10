@@ -6,31 +6,40 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { RootState } from "~redux/store";
+import { AppDispatch, RootState } from "~redux/store";
 import { FormatListBulleted, KeyboardDoubleArrowRight } from "@mui/icons-material";
+import { selectCurrentUserId } from "~helpers/user";
+import { useEffect } from "react";
+import { fetchTodos } from "~redux/slices/todoSlices";
+import useGetTodosByUserId from "~/hooks/useGetTodosByUserId";
 
 type SideBarTasksProps = {
   open: boolean;
 };
 
 export default function SideBarTasks({ open }: SideBarTasksProps) {
-  const tasks = useSelector((state: RootState) => state.todos.todos);
   const [searchParams, setSearchParams] = useSearchParams();
-
   const todayStr = new Date().toISOString().split("T")[0];
+  const isTodayActive = searchParams.get("date") === "today";
+  const isUpcomingActive = searchParams.get("date") === "upcoming";
 
+  const { userTodos, status } = useGetTodosByUserId();
+ 
   const getTodayTasksCount = () => {
-    return tasks.filter((task) => task.date === todayStr).length;
+    return userTodos.filter((task) => {
+      const taskDate = new Date(task.date).toISOString().split("T")[0];
+      return taskDate === todayStr;
+    }).length;
   };
 
   const getUpcomingTasksCount = () => {
-    return tasks.filter((task) => task.date > todayStr).length;
+    return userTodos.filter((task) => {
+      const taskDate = new Date(task.date).toISOString().split("T")[0];
+      return taskDate > todayStr;
+    }).length;
   };
-
-  const isTodayActive = searchParams.get("date") === "today";
-  const isUpcomingActive = searchParams.get("date") === "upcoming";
 
   const handleFilterToday = () => {
     const newParams = new URLSearchParams(searchParams);
