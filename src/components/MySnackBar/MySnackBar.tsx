@@ -1,33 +1,31 @@
 import { Close } from '@mui/icons-material';
 import { Alert, IconButton, Snackbar } from '@mui/material';
+import { SyntheticEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetTodoError } from '~redux/slices/todoSlices';
-import { resetUserError } from '~redux/slices/userSlices';
+import { hideSnackbar } from '~redux/slices/snackbarSlices';
 import { RootState } from '~redux/store';
 
-export function ErrorSnackBar() {
+export default function MySnackBar() {
     const dispatch = useDispatch();
 
-    const userError = useSelector((state: RootState) => state.user.error);
-    const todoError = useSelector((state: RootState) => state.todos.error);
+    const { open, message, severity } = useSelector((state: RootState) => state.snackbar);
 
-    const errorMessage = userError || todoError;
-    const isErrorVisible = Boolean(errorMessage);
-
-    const handleClose = () => {
-        if (userError) dispatch(resetUserError());
-        if (todoError) dispatch(resetTodoError());
+    const handleClose = (event?: Event | SyntheticEvent<any, Event>, reason?: string) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        dispatch(hideSnackbar());
     };
 
     return (
         <Snackbar
-            open={isErrorVisible}
+            open={open}
             autoHideDuration={6000}
             onClose={handleClose}
             anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
             <Alert
-                severity="error"
+                severity={severity}
                 onClose={handleClose}
                 action={
                     <IconButton
@@ -41,7 +39,7 @@ export function ErrorSnackBar() {
                 }
                 sx={{ width: "100%" }}
             >
-                {errorMessage}
+                {message}
             </Alert>
         </Snackbar>
     );

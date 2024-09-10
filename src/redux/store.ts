@@ -2,18 +2,20 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import snackbarSlices from "./slices/snackbarSlices";
 import todoSlices from "./slices/todoSlices";
 import userSlices from "./slices/userSlices";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user"], 
+  whitelist: ["user"],
 };
 
 const rootReducer = combineReducers({
   user: userSlices,
   todos: todoSlices,
+  snackbar: snackbarSlices,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

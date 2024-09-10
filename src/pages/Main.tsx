@@ -5,8 +5,7 @@ import { ITEMSPERPAGE } from "~/const/system";
 import { useFilteredTasks } from "~/hooks/useFilterTodos";
 import { useGetCurrentUserId } from "~/hooks/useGetCurrentUserId";
 import ControlPanel from "~components/ControlPanel/ControlPanel";
-import { ErrorSnackBar } from "~components/ErrorSnackbar/ErrorSnackbar";
-import { InfoSnackBar } from "~components/InfoSnackBar/InfoSnackBar";
+import MySnackBar from "~components/MySnackBar/MySnackBar";
 import NoTodo from "~components/NoTodo/NoTodo";
 import TodoList from "~components/TodoList/TodoList";
 import TodoListSkeleton from "~components/TodoListSkeleton/TodoListSkeleton";
@@ -71,8 +70,7 @@ export default function Main() {
           />
         </Box>
       </Box>
-      <ErrorSnackBar />
-      <InfoSnackBar />
+      <MySnackBar />
     </>
   );
 }

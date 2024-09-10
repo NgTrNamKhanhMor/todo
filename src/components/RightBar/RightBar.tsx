@@ -22,6 +22,7 @@ import { Todo } from "~/types/todo";
 import DateInput from "~components/DateInput/DateInput";
 import DeleteDialog from "~components/DeleteDialog/DeleteDialog";
 import TextInput from "~components/TextInput/TextInput";
+import { showSnackbar } from "~redux/slices/snackbarSlices";
 import { deleteTodo, fetchTodos } from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
 
@@ -57,18 +58,29 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
   const handleCloseDeleteTaskDialog = () => {
     setDeleteTaskOpen(false);
   };
-
   const handleDeleteTask = async () => {
     const taskId = selectedTask!.id;
     try {
       await dispatch(deleteTodo(taskId)).unwrap();
       await dispatch(fetchTodos(currentUserId!)).unwrap();
+
+      dispatch(
+        showSnackbar({ message: "Task deleted successfully", severity: "success" })
+      );
+
       setDeleteTaskOpen(false);
       closeRightBar();
     } catch (error) {
+      dispatch(
+        showSnackbar({
+          message: "Failed to delete task. Please try again.",
+          severity: "error",
+        })
+      );
       console.error("Failed to delete task or fetch todos:", error);
     }
   };
+
 
   const formik = useTaskFormik({ selectedTask, closeRightBar });
 
