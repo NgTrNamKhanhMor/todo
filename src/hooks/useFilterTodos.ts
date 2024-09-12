@@ -80,26 +80,13 @@ export function useFilteredTasks(tasks: Todo[]) {
     currentPage,
   ]);
 
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    newPage: number
-  ) => {
-    const params = new URLSearchParams();
-    if (searchQuery) params.set("search", searchQuery);
-    if (sortQuery) params.set("sort", sortQuery);
-     if (categoryQuery) params.set("completed", sortQuery);
-    if (categoryQuery) params.set("category", categoryQuery);
-    if (dateQuery) params.set("date", dateQuery);
-    params.set("page", newPage.toString());
-    setSearchParams(params);
-  };
+  
 
   return {
     finalTasks,
     filteredTotal,
     totalTasks,
     currentPage,
-    handlePageChange,
     isFiltering,
   };
 }

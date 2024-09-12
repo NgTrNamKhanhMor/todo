@@ -1,12 +1,12 @@
-import { Box, Pagination, useTheme } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ITEMSPERPAGE } from "~/const/system";
 import { useFilteredTasks } from "~/hooks/useFilterTodos";
 import { useGetCurrentUserId } from "~/hooks/useGetCurrentUserId";
 import ControlPanel from "~components/ControlPanel/ControlPanel";
 import MySnackBar from "~components/MySnackBar/MySnackBar";
 import NoTodo from "~components/NoTodo/NoTodo";
+import PaginationBar from "~components/PaginationBar/PaginationBar";
 import TodoList from "~components/TodoList/TodoList";
 import TodoListSkeleton from "~components/TodoListSkeleton/TodoListSkeleton";
 import { fetchTodos } from "~redux/slices/todoSlices";
@@ -23,7 +23,6 @@ export default function Main() {
     totalTasks,
     currentPage,
     isFiltering,
-    handlePageChange,
   } = useFilteredTasks(todos);
 
   useEffect(() => {
@@ -62,12 +61,7 @@ export default function Main() {
         </Box>
 
         <Box mt="auto" width={1} display="flex" justifyContent="center" pb={2}>
-          <Pagination
-            count={Math.ceil(totalTasks / ITEMSPERPAGE)}
-            page={currentPage}
-            color="primary"
-            onChange={handlePageChange}
-          />
+          <PaginationBar totalTasks={totalTasks} currentPage={currentPage} />
         </Box>
       </Box>
       <MySnackBar />
