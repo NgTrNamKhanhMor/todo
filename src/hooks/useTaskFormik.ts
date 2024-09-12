@@ -4,7 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { Todo } from "~/types/todo";
 import { todoSchema } from "~helpers/todosValidation";
 import { showSnackbar } from "~redux/slices/snackbarSlices";
-import { addTodo, fetchTodos, updateTodo } from "~redux/slices/todoSlices";
+import {
+  useAddTodoMutation,
+  useUpdateTodoMutation,
+} from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
 import { useGetCurrentUserId } from "./useGetCurrentUserId";
 
@@ -20,6 +23,8 @@ export const useTaskFormik = ({
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const currentUserId = useGetCurrentUserId();
+  const [addTodo] = useAddTodoMutation();
+  const [updateTodo] = useUpdateTodoMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -43,7 +48,7 @@ export const useTaskFormik = ({
 
       try {
         if (taskData.id) {
-          await dispatch(updateTodo(taskData)).unwrap();
+          await updateTodo(taskData);
           dispatch(
             showSnackbar({
               message: "Task updated successfully",
@@ -51,7 +56,7 @@ export const useTaskFormik = ({
             })
           );
         } else {
-          await dispatch(addTodo(taskData)).unwrap();
+          await addTodo(taskData);
           dispatch(
             showSnackbar({
               message: "Task added successfully",
@@ -59,8 +64,6 @@ export const useTaskFormik = ({
             })
           );
         }
-
-        await dispatch(fetchTodos(currentUserId!)).unwrap();
         resetForm();
         navigate("/");
         closeRightBar();

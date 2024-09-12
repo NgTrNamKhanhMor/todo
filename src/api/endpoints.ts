@@ -1,6 +1,6 @@
 import { API_URL } from "~/const/system";
 
-const basePaths = {
+export const basePaths = {
   user: API_URL + "/users",
   todo: API_URL + "/todo",
 };

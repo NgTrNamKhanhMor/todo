@@ -9,14 +9,17 @@ import NoTodo from "~components/NoTodo/NoTodo";
 import PaginationBar from "~components/PaginationBar/PaginationBar";
 import TodoList from "~components/TodoList/TodoList";
 import TodoListSkeleton from "~components/TodoListSkeleton/TodoListSkeleton";
-import { fetchTodos } from "~redux/slices/todoSlices";
 import { AppDispatch, RootState } from "~redux/store";
 import MainHeader from "../components/MainHeader/MainHeader";
+import { useFetchTodosQuery } from "~redux/slices/todoSlices";
+import { showSnackbar } from "~redux/slices/snackbarSlices";
 
 export default function Main() {
   const dispatch = useDispatch<AppDispatch>();
   const currentUserId = useGetCurrentUserId();
-  const { todos, status } = useSelector((state: RootState) => state.todos);
+  const { data: todos = [], error, isLoading } = useFetchTodosQuery(currentUserId!, {
+    skip: !currentUserId,
+  });
   const {
     finalTasks,
     filteredTotal,
@@ -24,11 +27,17 @@ export default function Main() {
     currentPage,
     isFiltering,
   } = useFilteredTasks(todos);
-
-  useEffect(() => {
-    dispatch(fetchTodos(currentUserId!));
-  }, []);
   const theme = useTheme();
+  useEffect(()=>{
+    if(error){
+      dispatch(
+        showSnackbar({
+          message: "Fail to get data",
+          severity: "warning",
+        })
+      );
+    }
+  },[error])
   return (
     <>
       <Box
@@ -51,7 +60,7 @@ export default function Main() {
         <ControlPanel />
 
         <Box flexGrow={1}>
-          {status === "loading" || isFiltering ? (
+          {isLoading || isFiltering ? (
             <TodoListSkeleton />
           ) : finalTasks.length > 0 ? (
             <TodoList tasks={finalTasks} />

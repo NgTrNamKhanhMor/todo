@@ -23,7 +23,7 @@ import DateInput from "~components/DateInput/DateInput";
 import DeleteDialog from "~components/DeleteDialog/DeleteDialog";
 import TextInput from "~components/TextInput/TextInput";
 import { showSnackbar } from "~redux/slices/snackbarSlices";
-import { deleteTodo, fetchTodos } from "~redux/slices/todoSlices";
+import { useDeleteTodoMutation } from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
 
 type RightBarProps = {
@@ -34,12 +34,11 @@ type RightBarProps = {
 
 export default function RightBar({ open, closeRightBar, selectedTask }: RightBarProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const currentUserId = useGetCurrentUserId();
   const theme = useTheme();
   const drawerWidth = 400;
   const collapsedWidth = 150;
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
-
+  const [deleteTodo, { isLoading }] = useDeleteTodoMutation();
   const [header, setHeader] = useState("");
   const [openDeleteTask, setDeleteTaskOpen] = useState(false);
 
@@ -61,9 +60,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
   const handleDeleteTask = async () => {
     const taskId = selectedTask!.id;
     try {
-      await dispatch(deleteTodo(taskId)).unwrap();
-      await dispatch(fetchTodos(currentUserId!)).unwrap();
-
+      await deleteTodo(taskId)
       dispatch(
         showSnackbar({ message: "Task deleted successfully", severity: "success" })
       );
@@ -200,6 +197,7 @@ export default function RightBar({ open, closeRightBar, selectedTask }: RightBar
         open={openDeleteTask}
         onClose={handleCloseDeleteTaskDialog}
         onSubmit={handleDeleteTask}
+        isLoading={isLoading}
       />
     </Drawer>
   );

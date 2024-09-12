@@ -7,18 +7,18 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { useGetTodos } from "~/hooks/useGetTodos";
 type RightBarProps = {
   open: boolean;
   onClose: () => void;
   onSubmit: () => void;
+  isLoading: boolean,
 };
 export default function DeleteDialog({
   open,
   onClose,
   onSubmit,
+  isLoading,
 }: RightBarProps) {
-  const { status } = useGetTodos();
   return (
     <Dialog
       open={open}
@@ -35,11 +35,11 @@ export default function DeleteDialog({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={onClose} variant="outlined" disabled={status === "loading"}>
+        <Button autoFocus onClick={onClose} variant="outlined" disabled={isLoading}>
           Cancel
         </Button>
-        <Button onClick={onSubmit} autoFocus variant="contained" disabled={status === "loading"}>
-          {status === "loading" ? (
+        <Button onClick={onSubmit} autoFocus variant="contained" disabled={isLoading}>
+          {isLoading ? (
             <>
               <CircularProgress size={20} sx={{ mr: 1 }} />
               Saving

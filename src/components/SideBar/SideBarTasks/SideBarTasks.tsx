@@ -19,7 +19,7 @@ export default function SideBarTasks({ open }: SideBarTasksProps) {
   const todayStr = new Date().toISOString().split("T")[0];
   const isTodayActive = searchParams.get("date") === "today";
   const isUpcomingActive = searchParams.get("date") === "upcoming";
-  const { todos, status } = useGetTodos();
+  const todos = useGetTodos();
 
   const getTodayTasksCount = () => {
     return todos.filter((todo) => {

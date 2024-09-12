@@ -1,156 +1,85 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-import { apiEndpoints } from "~/api/endpoints";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { basePaths } from "~/api/endpoints";
 import { Todo } from "~/types/todo";
-import { RootState } from "~redux/store";
 
-interface TodoState {
-  todos: Todo[];
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
-
-const initialState: TodoState = {
-  todos: [],
-  status: "idle",
-  error: null,
-};
-
-export const fetchTodos = createAsyncThunk(
-  "todos/fetchTodos",
-  async (currentUserId: number) => {
-    const response = await axios.get(apiEndpoints.todo.getAll);
-    const userTodos = response.data.filter(
-      (todo: Todo) => todo.user === currentUserId
-    );
-    return userTodos;
-  }
-);
-
-export const addTodo = createAsyncThunk(
-  "todos/addTodo",
-  async (newTodo: Todo) => {
-    const response = await axios.post(apiEndpoints.todo.create, newTodo);
-    return response.data;
-  }
-);
-
-export const updateTodo = createAsyncThunk(
-  "todos/updateTodo",
-  async (updatedTodo: Todo) => {
-    const response = await axios.put(
-      apiEndpoints.todo.updateById(updatedTodo.id),
-      updatedTodo
-    );
-    return response.data;
-  }
-);
-
-export const deleteTodo = createAsyncThunk(
-  "todos/deleteTodo",
-  async (todoId: number) => {
-    await axios.delete(apiEndpoints.todo.deleteById(todoId));
-    return todoId;
-  }
-);
-
-export const toggleComplete = createAsyncThunk(
-  "todos/toggleComplete",
-  async (todoId: number, { getState, dispatch }) => {
-    const state = getState() as RootState;
-    const todo = state.todos.todos.find((todo) => todo.id === todoId);
-
-    if (todo) {
-      dispatch(todoSlice.actions.toggleCompleteOptimistic(todoId));
-
-      try {
-        await axios.put(apiEndpoints.todo.updateById(todoId), {
-          completed: !todo.completed,
-        });
-      } catch (error) {
-        dispatch(todoSlice.actions.toggleCompleteOptimistic(todoId));
-        throw error;
-      }
-    }
-  }
-);
-const todoSlice = createSlice({
-  name: "todos",
-  initialState,
-  reducers: {
-    toggleCompleteOptimistic: (state, action) => {
-      const todo = state.todos.find((todo) => todo.id === action.payload);
-      if (todo) {
-        todo.completed = !todo.completed;
-      }
-    },
-    resetTodoError: (state) => {
-      state.status = "idle";
-      state.error = null;
-    },
-  },
-  extraReducers: (builder) => {
-    builder
-      // Fetch Todos
-      .addCase(fetchTodos.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
-      .addCase(fetchTodos.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.todos = action.payload;
-      })
-      .addCase(fetchTodos.rejected, (state) => {
-        state.status = "failed";
-        state.error = "Failed to fetch todos";
-      })
-
-      // Add Todo
-      .addCase(addTodo.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
-      .addCase(addTodo.fulfilled, (state) => {
-        state.status = "succeeded";
-      })
-      .addCase(addTodo.rejected, (state) => {
-        state.status = "failed";
-        state.error = "Failed to add task";
-      })
-
-      // Update Todo
-      .addCase(updateTodo.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(updateTodo.fulfilled, (state) => {
-        state.status = "succeeded";
-      })
-      .addCase(updateTodo.rejected, (state) => {
-        state.status = "failed";
-        state.error = "Failed to update task";
-      })
-
-      // Delete Todo
-      .addCase(deleteTodo.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(deleteTodo.fulfilled, (state) => {
-        state.status = "succeeded";
-      })
-      .addCase(deleteTodo.rejected, (state) => {
-        state.status = "failed";
-        state.error = "Failed to delete task";
-      })
-
-      // Toggle Complete
-      .addCase(toggleComplete.fulfilled, (state) => {
-        state.status = "succeeded";
-      })
-      .addCase(toggleComplete.rejected, (state) => {
-        state.status = "failed";
-      });
-  },
+export const todoApi = createApi({
+  reducerPath: "todoApi",
+  baseQuery: fetchBaseQuery({ baseUrl: basePaths.todo }),
+  tagTypes: ["Todos"],
+  endpoints: (builder) => ({
+    fetchTodos: builder.query<Todo[], number>({
+      query: (userId) => "/",
+      transformResponse: (response: Todo[], meta, userId: number) =>
+        response.filter((todo) => todo.user === userId),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Todos", id } as const)),
+              { type: "Todos", id: "LIST" },
+            ]
+          : [{ type: "Todos", id: "LIST" }],
+    }),
+    addTodo: builder.mutation<Todo, Todo>({
+      query: (newTodo) => ({
+        url: "",
+        method: "POST",
+        body: newTodo,
+      }),
+      invalidatesTags: [{ type: "Todos", id: "LIST" }],
+    }),
+    updateTodo: builder.mutation<Todo, Todo>({
+      query: (updatedTodo) => ({
+        url: `/${updatedTodo.id}`,
+        method: "PUT",
+        body: updatedTodo,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Todos", id }],
+    }),
+    deleteTodo: builder.mutation<number, number>({
+      query: (todoId) => ({
+        url: `/${todoId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [{ type: "Todos", id }],
+    }),
+    toggleComplete: builder.mutation<
+      void,
+      { todoId: number; completed: boolean }
+    >({
+      query: ({ todoId, completed }) => ({
+        url: `/${todoId}`,
+        method: "PUT",
+        body: { completed },
+      }),
+      async onQueryStarted(
+        { todoId, completed },
+        { dispatch, queryFulfilled }
+      ) {
+        const patchResult = dispatch(
+          todoApi.util.updateQueryData("fetchTodos", 1, (draft) => {
+            const todo = draft.find((todo) => todo.id === todoId);
+            if (todo) {
+              todo.completed = completed;
+            }
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+      invalidatesTags: (result, error, { todoId }) => [
+        { type: "Todos", id: todoId },
+      ],
+    }),
+  }),
 });
 
-export const { resetTodoError} = todoSlice.actions;
-export default todoSlice.reducer;
+export const {
+  useFetchTodosQuery,
+  useAddTodoMutation,
+  useUpdateTodoMutation,
+  useDeleteTodoMutation,
+  useToggleCompleteMutation,
+} = todoApi;

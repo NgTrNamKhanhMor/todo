@@ -1,9 +1,8 @@
-// store.ts
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import snackbarSlices from "./slices/snackbarSlices";
-import todoSlices from "./slices/todoSlices";
+import { todoApi } from "./slices/todoSlices";
 import userSlices from "./slices/userSlices";
 
 const persistConfig = {
@@ -14,14 +13,20 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   user: userSlices,
-  todos: todoSlices,
   snackbar: snackbarSlices,
+  [todoApi.reducerPath]: todoApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ["persist/PERSIST"],
+      },
+    }).concat(todoApi.middleware), 
 });
 
 export const persistor = persistStore(store);

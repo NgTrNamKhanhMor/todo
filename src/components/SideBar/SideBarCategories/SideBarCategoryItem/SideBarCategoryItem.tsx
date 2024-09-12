@@ -18,7 +18,7 @@ export default function SideBarCategoryItem({
   open,
   category,
 }: SideBarCategoryItemProps) {
-  const { todos, status } = useGetTodos();
+  const todos = useGetTodos();
   const [searchParams, setSearchParams] = useSearchParams();
   const isCategoryActive = searchParams.get("category") === category.value;
 
