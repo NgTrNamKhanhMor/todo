@@ -18,7 +18,7 @@ export const login = createAsyncThunk(
   "user/login",
   async (userCredentials: { email: string; password: string }) => {
     try {
-      const response = await axios.get(apiEndpoints.user.getAll);
+      const response = await axios.get(apiEndpoints.user.base);
       const users: User[] = response.data;
 
       const user = users.find(
@@ -45,7 +45,7 @@ export const register = createAsyncThunk(
   "user/register",
   async (userDetails: { name: string; email: string; password: string }) => {
     try {
-      const response = await axios.get(apiEndpoints.user.getAll);
+      const response = await axios.get(apiEndpoints.user.base);
       const users: User[] = response.data;
 
       const userExists = users.some((user) => user.email === userDetails.email);
@@ -59,7 +59,7 @@ export const register = createAsyncThunk(
         ...userDetails,
       };
 
-      await axios.post(apiEndpoints.user.register, newUser);
+      await axios.post(apiEndpoints.user.base, newUser);
 
       return newUser;
     } catch (error: any) {

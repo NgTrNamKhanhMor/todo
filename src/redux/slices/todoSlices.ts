@@ -1,14 +1,44 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { basePaths } from "~/api/endpoints";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import axiosInstance from "~/api/api";
+import { apiEndpoints } from "~/api/endpoints";
 import { Todo } from "~/types/todo";
 
+const baseQuery = async ({
+  url,
+  method,
+  body,
+}: {
+  url: string;
+  method: string;
+  body?: any;
+}) => {
+  try {
+    const result = await axiosInstance({
+      url,
+      method,
+      data: body,
+    });
+    return { data: result.data };
+  } catch (axiosError) {
+    let err = axiosError as { response?: { data: any; status: number } };
+    return {
+      error: {
+        status: err.response?.status,
+        data: err.response?.data,
+      },
+    };
+  }
+};
 export const todoApi = createApi({
   reducerPath: "todoApi",
-  baseQuery: fetchBaseQuery({ baseUrl: basePaths.todo }),
+  baseQuery,
   tagTypes: ["Todos"],
   endpoints: (builder) => ({
     fetchTodos: builder.query<Todo[], number>({
-      query: (userId) => "/",
+      query: (userId) => ({
+        url: apiEndpoints.todo.base,
+        method: "GET",
+      }),
       transformResponse: (response: Todo[], meta, userId: number) =>
         response.filter((todo) => todo.user === userId),
       providesTags: (result) =>
@@ -21,7 +51,7 @@ export const todoApi = createApi({
     }),
     addTodo: builder.mutation<Todo, Todo>({
       query: (newTodo) => ({
-        url: "",
+        url: apiEndpoints.todo.base,
         method: "POST",
         body: newTodo,
       }),
@@ -29,7 +59,7 @@ export const todoApi = createApi({
     }),
     updateTodo: builder.mutation<Todo, Todo>({
       query: (updatedTodo) => ({
-        url: `/${updatedTodo.id}`,
+        url: `${apiEndpoints.todo.base}/${updatedTodo.id}`,
         method: "PUT",
         body: updatedTodo,
       }),
@@ -37,7 +67,7 @@ export const todoApi = createApi({
     }),
     deleteTodo: builder.mutation<number, number>({
       query: (todoId) => ({
-        url: `/${todoId}`,
+        url: `${apiEndpoints.todo.base}/${todoId}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [{ type: "Todos", id }],
@@ -47,7 +77,7 @@ export const todoApi = createApi({
       { todoId: number; completed: boolean }
     >({
       query: ({ todoId, completed }) => ({
-        url: `/${todoId}`,
+        url: `${apiEndpoints.todo.base}/${todoId}`,
         method: "PUT",
         body: { completed },
       }),
