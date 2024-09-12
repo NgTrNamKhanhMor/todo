@@ -7,12 +7,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { StyledPaper } from "~/styles/Paper.style";
 import TextInput from "~components/TextInput/TextInput";
 import { authSchema } from "~helpers/authValidation";
-import { login, resetUserError } from "~redux/slices/userSlices";
+import { useLoginMutation } from "~redux/services/userApi";
+import { resetUserError } from "~redux/slices/userSlices";
 import { AppDispatch, RootState } from "~redux/store";
 
 export default function Login() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const [login] = useLoginMutation();
   const { status, error } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
@@ -29,15 +31,16 @@ export default function Login() {
       password: "",
     },
     validationSchema: authSchema,
-    onSubmit: (values, { setSubmitting }) => {
-      dispatch(login(values))
-        .unwrap()
-        .then(() => {
-          navigate("/");
-        })
-        .catch(() => {
-          setSubmitting(false);
-        });
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        await login(values).unwrap();
+        navigate("/");
+      } catch (err) {
+        console.error("Login failed:", err);
+      } finally {
+        setSubmitting(false);
+      }
+
     },
   });
 

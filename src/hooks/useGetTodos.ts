@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { todoApi } from "~redux/slices/todoSlices";
+import { todoApi } from "~redux/services/todoApi";
 import { RootState } from "~redux/store";
 import { useGetCurrentUserId } from "./useGetCurrentUserId";
 

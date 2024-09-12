@@ -16,14 +16,13 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { categories } from "~/const/categories";
-import { useGetCurrentUserId } from "~/hooks/useGetCurrentUserId";
 import { useTaskFormik } from "~/hooks/useTaskFormik";
 import { Todo } from "~/types/todo";
 import DateInput from "~components/DateInput/DateInput";
 import DeleteDialog from "~components/DeleteDialog/DeleteDialog";
 import TextInput from "~components/TextInput/TextInput";
+import { useDeleteTodoMutation } from "~redux/services/todoApi";
 import { showSnackbar } from "~redux/slices/snackbarSlices";
-import { useDeleteTodoMutation } from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
 
 type RightBarProps = {

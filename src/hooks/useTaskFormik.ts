@@ -3,11 +3,11 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Todo } from "~/types/todo";
 import { todoSchema } from "~helpers/todosValidation";
-import { showSnackbar } from "~redux/slices/snackbarSlices";
 import {
   useAddTodoMutation,
   useUpdateTodoMutation,
-} from "~redux/slices/todoSlices";
+} from "~redux/services/todoApi";
+import { showSnackbar } from "~redux/slices/snackbarSlices";
 import { AppDispatch } from "~redux/store";
 import { useGetCurrentUserId } from "./useGetCurrentUserId";
 

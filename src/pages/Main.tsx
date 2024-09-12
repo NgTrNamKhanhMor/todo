@@ -1,6 +1,6 @@
 import { Box, useTheme } from "@mui/material";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useFilteredTasks } from "~/hooks/useFilterTodos";
 import { useGetCurrentUserId } from "~/hooks/useGetCurrentUserId";
 import ControlPanel from "~components/ControlPanel/ControlPanel";
@@ -9,10 +9,10 @@ import NoTodo from "~components/NoTodo/NoTodo";
 import PaginationBar from "~components/PaginationBar/PaginationBar";
 import TodoList from "~components/TodoList/TodoList";
 import TodoListSkeleton from "~components/TodoListSkeleton/TodoListSkeleton";
-import { AppDispatch, RootState } from "~redux/store";
-import MainHeader from "../components/MainHeader/MainHeader";
-import { useFetchTodosQuery } from "~redux/slices/todoSlices";
+import { useFetchTodosQuery } from "~redux/services/todoApi";
 import { showSnackbar } from "~redux/slices/snackbarSlices";
+import { AppDispatch } from "~redux/store";
+import MainHeader from "../components/MainHeader/MainHeader";
 
 export default function Main() {
   const dispatch = useDispatch<AppDispatch>();
@@ -28,8 +28,8 @@ export default function Main() {
     isFiltering,
   } = useFilteredTasks(todos);
   const theme = useTheme();
-  useEffect(()=>{
-    if(error){
+  useEffect(() => {
+    if (error) {
       dispatch(
         showSnackbar({
           message: "Fail to get data",
@@ -37,7 +37,7 @@ export default function Main() {
         })
       );
     }
-  },[error])
+  }, [error])
   return (
     <>
       <Box

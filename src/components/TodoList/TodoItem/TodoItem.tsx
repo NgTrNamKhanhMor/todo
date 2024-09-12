@@ -13,8 +13,8 @@ import { useDispatch } from "react-redux";
 import { TaskContext } from "~/layouts/Layout";
 import { Todo } from "~/types/todo";
 import { toPascalCase } from "~helpers/text";
+import { useToggleCompleteMutation } from "~redux/services/todoApi";
 import { showSnackbar } from "~redux/slices/snackbarSlices";
-import { useToggleCompleteMutation } from "~redux/slices/todoSlices";
 import { AppDispatch } from "~redux/store";
 type TodoItemProps = {
   task: Todo;
@@ -25,7 +25,7 @@ export default function TodoItem({ task }: TodoItemProps) {
   const [toogleTodo] = useToggleCompleteMutation();
   const handleToggleComplete = async () => {
     try {
-      await toogleTodo({todoId: task.id, completed: !task.completed})
+      await toogleTodo({ todoId: task.id, completed: !task.completed })
       dispatch(
         showSnackbar({
           message: "Task completion status updated successfully",

@@ -7,14 +7,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { StyledPaper } from "~/styles/Paper.style";
 import TextInput from "~components/TextInput/TextInput";
 import { registerValidationSchema } from '~helpers/authValidation';
-import { register, resetUserError } from '~redux/slices/userSlices';
+import { useRegisterMutation } from "~redux/services/userApi";
+import { resetUserError } from '~redux/slices/userSlices';
 import { AppDispatch, RootState } from '~redux/store';
 
 export default function Register() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { status, error } = useSelector((state: RootState) => state.user);
-
+  const [register] = useRegisterMutation();
   useEffect(() => {
     dispatch(resetUserError());
   }, [dispatch]);
@@ -30,15 +31,16 @@ export default function Register() {
       password: '',
     },
     validationSchema: registerValidationSchema,
-    onSubmit: (values, { setSubmitting }) => {
-      dispatch(register(values))
-        .unwrap()
-        .then(() => {
-          navigate('/');
-        })
-        .catch(() => {
-          setSubmitting(false);
-        });
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        await register(values).unwrap();
+        navigate("/");
+      } catch (err) {
+        console.error("Login failed:", err);
+      } finally {
+        setSubmitting(false);
+      }
+
     },
   });
 

@@ -1,8 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
-import { apiEndpoints } from "~/api/endpoints";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "~/types/user";
-export interface UserState {
+
+interface UserState {
   currentUserId: number | null;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
@@ -13,66 +12,6 @@ const initialState: UserState = {
   status: "idle",
   error: null,
 };
-
-export const login = createAsyncThunk(
-  "user/login",
-  async (userCredentials: { email: string; password: string }) => {
-    try {
-      const response = await axios.get(apiEndpoints.user.base);
-      const users: User[] = response.data;
-
-      const user = users.find(
-        (user) =>
-          user.email === userCredentials.email &&
-          user.password === userCredentials.password
-      );
-
-      if (user) {
-        return user;
-      } else {
-        throw new Error("Invalid email or password");
-      }
-    } catch (error: any) {
-      if (error.message) {
-        throw error;
-      }
-      throw new Error(error.response?.data?.message || "Login failed");
-    }
-  }
-);
-
-export const register = createAsyncThunk(
-  "user/register",
-  async (userDetails: { name: string; email: string; password: string }) => {
-    try {
-      const response = await axios.get(apiEndpoints.user.base);
-      const users: User[] = response.data;
-
-      const userExists = users.some((user) => user.email === userDetails.email);
-
-      if (userExists) {
-        throw new Error("User with this email already exists");
-      }
-
-      const newUser: User = {
-        id: users.length + 1,
-        ...userDetails,
-      };
-
-      await axios.post(apiEndpoints.user.base, newUser);
-
-      return newUser;
-    } catch (error: any) {
-      if (error.message) {
-        throw error;
-      }
-      throw new Error(
-        error.response?.data?.message ||
-          "Registration failed due to server error"
-      );
-    }
-  }
-);
 
 const userSlice = createSlice({
   name: "user",
@@ -87,38 +26,32 @@ const userSlice = createSlice({
       state.status = "idle";
       state.error = null;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      // Login cases
-      .addCase(login.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
-      .addCase(login.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.currentUserId = action.payload.id;
-      })
-      .addCase(login.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message || "Failed to login";
-      })
-      //Register cases
-      .addCase(register.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
-      .addCase(register.fulfilled, (state, action: PayloadAction<User>) => {
-        state.status = "succeeded";
-        state.currentUserId = action.payload.id;
-      })
-      .addCase(register.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message || "Failed to register";
-      });
+    loginSuccess: (state, action: PayloadAction<User>) => {
+      state.status = "succeeded";
+      state.currentUserId = action.payload.id;
+    },
+    loginFailure: (state, action: PayloadAction<string>) => {
+      state.status = "failed";
+      state.error = action.payload;
+    },
+    registerSuccess: (state, action: PayloadAction<User>) => {
+      state.status = "succeeded";
+      state.currentUserId = action.payload.id;
+    },
+    registerFailure: (state, action: PayloadAction<string>) => {
+      state.status = "failed";
+      state.error = action.payload;
+    },
   },
 });
 
-export const { logout, resetUserError } = userSlice.actions;
+export const {
+  logout,
+  resetUserError,
+  loginSuccess,
+  loginFailure,
+  registerSuccess,
+  registerFailure,
+} = userSlice.actions;
 
 export default userSlice.reducer;
