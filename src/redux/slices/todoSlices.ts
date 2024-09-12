@@ -7,14 +7,12 @@ import { RootState } from "~redux/store";
 interface TodoState {
   todos: Todo[];
   status: "idle" | "loading" | "succeeded" | "failed";
-  info: string | null;
   error: string | null;
 }
 
 const initialState: TodoState = {
   todos: [],
   status: "idle",
-  info: null,
   error: null,
 };
 
@@ -90,12 +88,6 @@ const todoSlice = createSlice({
       state.status = "idle";
       state.error = null;
     },
-    setTodoInfo: (state, action) => {
-      state.info = action.payload;
-    },
-    clearTodoInfo: (state) => {
-      state.info = null;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -120,7 +112,6 @@ const todoSlice = createSlice({
       })
       .addCase(addTodo.fulfilled, (state) => {
         state.status = "succeeded";
-        state.info = "Task added successfully!";
       })
       .addCase(addTodo.rejected, (state) => {
         state.status = "failed";
@@ -133,7 +124,6 @@ const todoSlice = createSlice({
       })
       .addCase(updateTodo.fulfilled, (state) => {
         state.status = "succeeded";
-        state.info = "Task updated successfully!";
       })
       .addCase(updateTodo.rejected, (state) => {
         state.status = "failed";
@@ -146,7 +136,6 @@ const todoSlice = createSlice({
       })
       .addCase(deleteTodo.fulfilled, (state) => {
         state.status = "succeeded";
-        state.info = "Task deleted successfully!";
       })
       .addCase(deleteTodo.rejected, (state) => {
         state.status = "failed";
@@ -156,14 +145,12 @@ const todoSlice = createSlice({
       // Toggle Complete
       .addCase(toggleComplete.fulfilled, (state) => {
         state.status = "succeeded";
-        state.info = "Task completion status updated!";
       })
       .addCase(toggleComplete.rejected, (state) => {
         state.status = "failed";
-        state.error = "Failed to update task completion status";
       });
   },
 });
 
-export const { resetTodoError, setTodoInfo, clearTodoInfo } = todoSlice.actions;
+export const { resetTodoError} = todoSlice.actions;
 export default todoSlice.reducer;
