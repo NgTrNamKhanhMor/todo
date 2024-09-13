@@ -1,23 +1,20 @@
 import { Search } from "@mui/icons-material";
 import { Box, IconButton, InputAdornment, TextField } from "@mui/material";
-import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { useTodosFilter } from "~/hooks/useTodosFilter";
 
 export default function SearchBar() {
-    const [searchParams, setSearchParams] = useSearchParams();
-
+    const { search, setFilters } = useTodosFilter();
+    const [searchValue, setSearchValue] = useState<string>(search || "");
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchValue(event.target.value);
+    };
     const handleSubmitSearch = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        const searchValue = formData.get("search") || "";
-        const newParams = new URLSearchParams(searchParams.toString());
-
-        if (typeof searchValue === "string") {
-            if (searchValue.trim()) {
-                newParams.set("search", searchValue);
-            } else {
-                newParams.delete("search");
-            }
-            setSearchParams(newParams);
+        if (searchValue.trim() === "") {
+            setFilters({ search: undefined });
+        } else {
+            setFilters({ search: searchValue.trim() });
         }
     };
 
@@ -33,7 +30,9 @@ export default function SearchBar() {
                 autoComplete="off"
                 variant="outlined"
                 size="medium"
+                value={searchValue}
                 fullWidth
+                onChange={handleInputChange}
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">

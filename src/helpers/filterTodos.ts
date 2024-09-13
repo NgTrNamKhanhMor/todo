@@ -1,5 +1,6 @@
 import { categories } from "~/const/categories";
 import { ITEMSPERPAGE } from "~/const/system";
+import { TodoFilter } from "~/types/filter";
 import { Todo } from "~/types/todo";
 
 export function filterTasksBySearch(
@@ -11,22 +12,8 @@ export function filterTasksBySearch(
     task.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 }
-function deleteParams(
-  type: string,
-  searchParams: URLSearchParams,
-  setSearchParams: (params: URLSearchParams) => void
-) {
-  const newParams = new URLSearchParams(searchParams.toString());
-  newParams.delete(type);
-  setSearchParams(newParams);
-}
 
-export function sortTasksByDate(
-  tasks: Todo[],
-  sortQuery: string,
-  setSearchParams: (params: URLSearchParams) => void,
-  searchParams: URLSearchParams
-): Todo[] {
+export function sortTasksByDate(tasks: Todo[], sortQuery: string): Todo[] {
   const tasksCopy = [...tasks];
 
   if (sortQuery) {
@@ -40,7 +27,6 @@ export function sortTasksByDate(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
       default:
-        deleteParams("sort", searchParams, setSearchParams);
         return tasks;
     }
   } else {
@@ -50,9 +36,7 @@ export function sortTasksByDate(
 
 export function filterTasksByCompletion(
   tasks: Todo[],
-  completionQuery: string,
-  setSearchParams: (params: URLSearchParams) => void,
-  searchParams: URLSearchParams
+  completionQuery: string
 ): Todo[] {
   if (completionQuery) {
     switch (completionQuery) {
@@ -61,7 +45,6 @@ export function filterTasksByCompletion(
       case "false":
         return tasks.filter((task) => !task.completed);
       default:
-        deleteParams("completed", searchParams, setSearchParams);
         return tasks;
     }
   } else {
@@ -71,9 +54,7 @@ export function filterTasksByCompletion(
 
 export function filterTasksByCategory(
   tasks: Todo[],
-  categoryQuery: string,
-  setSearchParams: (params: URLSearchParams) => void,
-  searchParams: URLSearchParams
+  categoryQuery: string
 ): Todo[] {
   if (categoryQuery) {
     const validCategoriesValues = categories.map((category) => category.value);
@@ -83,7 +64,6 @@ export function filterTasksByCategory(
       );
       return filteredTasks;
     }
-    deleteParams("category", searchParams, setSearchParams);
     return tasks;
   } else {
     return tasks;
@@ -91,9 +71,7 @@ export function filterTasksByCategory(
 }
 export function filterTasksByDate(
   tasks: Todo[],
-  dateQuery: string | undefined,
-  setSearchParams: (params: URLSearchParams) => void,
-  searchParams: URLSearchParams
+  dateQuery: string | undefined
 ): Todo[] {
   if (dateQuery) {
     const now = new Date();
@@ -116,7 +94,6 @@ export function filterTasksByDate(
             (task) => new Date(task.date).setHours(0, 0, 0, 0) === startDate
           );
         } else {
-          deleteParams("date", searchParams, setSearchParams);
           return tasks;
         }
     }
@@ -128,9 +105,8 @@ export function paginateTasks(
   tasks: Todo[],
   pageQuery: number | string,
   currentPage: number,
-  searchParams: URLSearchParams,
-  setCurrentPage: (page: number) => void,
-  setSearchParams: (params: URLSearchParams) => void
+  setFilters: (filters: Partial<TodoFilter>) => void,
+  setCurrentPage: (page: number) => void
 ) {
   const parsedPageQuery = parseInt(pageQuery as string, 10);
   const isValidPageQuery = !isNaN(parsedPageQuery) && parsedPageQuery > 0;
@@ -147,27 +123,23 @@ export function paginateTasks(
   updatePageIfNeeded(
     currentPage,
     validPage,
-    searchParams,
+    setFilters,
     setCurrentPage,
-    setSearchParams,
     isValidPageQuery
   );
 
-  return { paginatedTasks, validPage };
+  return paginatedTasks;
 }
 
 function updatePageIfNeeded(
   currentPage: number,
   validPage: number,
-  searchParams: URLSearchParams,
+  setFilters: (filters: Partial<TodoFilter>) => void,
   setCurrentPage: (page: number) => void,
-  setSearchParams: (params: URLSearchParams) => void,
   isValidPageQuery: boolean
 ) {
   if (currentPage !== validPage || !isValidPageQuery) {
     setCurrentPage(validPage);
-    const params = new URLSearchParams(searchParams);
-    params.set("page", validPage.toString());
-    setSearchParams(params);
+    setFilters({ page: validPage });
   }
 }

@@ -4,8 +4,8 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { useSearchParams } from "react-router-dom";
 import { useGetTodos } from "~/hooks/useGetTodos";
+import { useTodosFilter } from "~/hooks/useTodosFilter";
 import { Category } from "~/types/category";
 import ColoredBox from "~components/ColoredBox/ColoredBox";
 
@@ -18,22 +18,20 @@ export default function SideBarCategoryItem({
   open,
   category,
 }: SideBarCategoryItemProps) {
-  const todos = useGetTodos();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const isCategoryActive = searchParams.get("category") === category.value;
+  const { filteredTodos } = useGetTodos();
+  const { category: categoryParams, setFilters } = useTodosFilter();
+  const isCategoryActive = categoryParams === category.value;
 
   const handleFilterCategory = () => {
-    const newParams = new URLSearchParams(searchParams);
     if (isCategoryActive) {
-      newParams.delete("category");
+      setFilters({category: undefined})
     } else {
-      newParams.set("category", category.value);
+      setFilters({category: category.value})
     }
-    setSearchParams(newParams);
   };
 
   const getTodayTasksCount = () => {
-    return todos.filter((todo) => todo.category === category.value).length;
+    return filteredTodos.filter((todo) => todo.category === category.value).length;
   };
 
   return (

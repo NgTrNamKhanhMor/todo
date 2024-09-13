@@ -9,7 +9,7 @@ import { completions } from "~/const/completions";
 import { filterParams } from "~/const/filtersCount";
 import { sorts } from "~/const/sorts";
 import DatePickerFilter from "~components/DatePickerFilter/DatePickerFilter";
-import SelectInput from "~components/SelectFilter/SelectFilter";
+import SelectFilter from "~components/SelectFilter/SelectFilter";
 
 export default function Filters() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,11 +26,11 @@ export default function Filters() {
     <Stack spacing={3}>
       <Grid container spacing={0} columnGap={2} gap={3}>
         <Grid item xs={12} sm={4} md={3}>
-          <SelectInput type={"sort"} label="Sort by Date" data={sorts} />
+          <SelectFilter type={"sort"} label="Sort by Date" data={sorts} />
         </Grid>
 
         <Grid item xs={12} sm={4} md={3}>
-          <SelectInput type={"completed"} label="Sort by Completion" data={completions} />
+          <SelectFilter type={"completed"} label="Sort by Completion" data={completions} />
         </Grid>
 
         <Grid item xs={12} sm={4} md={3}>

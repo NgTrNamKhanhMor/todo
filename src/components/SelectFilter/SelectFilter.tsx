@@ -1,33 +1,32 @@
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useTodosFilter } from '~/hooks/useTodosFilter';
+import { TodoFilter } from '~/types/filter';
 import { selectInput } from '~/types/selectInput';
 
 type SelectInputProps = {
-    type: string,
+    type: keyof TodoFilter,
     label: string,
     data: selectInput,
 };
 
-export default function SelectInput({ type, label, data }: SelectInputProps) {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [input, setInput] = useState("none");
+export default function SelectFilter({ type, label, data }: SelectInputProps) {
+    const { completed, sort, setFilters } = useTodosFilter();
+    const value = type === 'completed' ? completed : sort;
     const handleInputChange = (event: SelectChangeEvent) => {
-        const newValue = event.target.value as string;
-        setInput(newValue);
-        const newParams = new URLSearchParams(searchParams.toString());
-        newParams.set(type, newValue);
-        setSearchParams(newParams);
+
+        const newValue = event.target.value as TodoFilter[keyof TodoFilter];
+        if (newValue === "none") {
+            setFilters({ [type]: null });
+        } else {
+            setFilters({ [type]: newValue });
+        }
     };
-    useEffect(() => {
-        const currentCompletionStatus = searchParams.get(type) || "none";
-        setInput(currentCompletionStatus);
-    }, [searchParams]);
+
     return (
         <FormControl fullWidth>
             <InputLabel>{label}</InputLabel>
             <Select
-                value={input}
+                value={value || ""}
                 onChange={handleInputChange}
                 label={label}
             >

@@ -7,52 +7,48 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { useSearchParams } from "react-router-dom";
 import { useGetTodos } from "~/hooks/useGetTodos";
+import { useTodosFilter } from "~/hooks/useTodosFilter";
 
 type SideBarTasksProps = {
   open: boolean;
 };
 
 export default function SideBarTasks({ open }: SideBarTasksProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { filteredTodos } = useGetTodos();
+  const { date: dateParams, setFilters } = useTodosFilter();
   const todayStr = new Date().toISOString().split("T")[0];
-  const isTodayActive = searchParams.get("date") === "today";
-  const isUpcomingActive = searchParams.get("date") === "upcoming";
-  const todos = useGetTodos();
+  const isTodayActive = dateParams === "today";
+  const isUpcomingActive = dateParams === "upcoming";
 
   const getTodayTasksCount = () => {
-    return todos.filter((todo) => {
+    return filteredTodos.filter((todo) => {
       const todoDate = new Date(todo.date).toISOString().split("T")[0];
       return todoDate === todayStr;
     }).length;
   };
 
   const getUpcomingTasksCount = () => {
-    return todos.filter((todo) => {
+    return filteredTodos.filter((todo) => {
       const todoDate = new Date(todo.date).toISOString().split("T")[0];
       return todoDate > todayStr;
     }).length;
   };
 
   const handleFilterToday = () => {
-    const newParams = new URLSearchParams(searchParams);
     if (isTodayActive) {
-      newParams.delete("date");
+      setFilters({ date: undefined })
     } else {
-      newParams.set("date", "today");
+      setFilters({ date: "today" })
     }
-    setSearchParams(newParams);
   };
 
   const handleFilterUpcoming = () => {
-    const newParams = new URLSearchParams(searchParams);
     if (isUpcomingActive) {
-      newParams.delete("date");
+      setFilters({ date: undefined })
     } else {
-      newParams.set("date", "upcoming");
+      setFilters({ date: "upcoming" })
     }
-    setSearchParams(newParams);
   };
 
   const todayTasksCount = getTodayTasksCount();

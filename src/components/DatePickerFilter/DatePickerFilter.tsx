@@ -2,43 +2,37 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-
+import { TextField } from "@mui/material";
+import { useTodosFilter } from "~/hooks/useTodosFilter";
 
 export default function DatePickerFilter() {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const { date, setFilters } = useTodosFilter();
     const [dateFilter, setDateFilter] = useState<Dayjs | null>(null);
     const [isUpcoming, setIsUpcoming] = useState(false);
+
+    useEffect(() => {
+        const parsedDate = getDateFromQuery(date || "");
+        setDateFilter(parsedDate);
+        setIsUpcoming(date === "upcoming");
+    }, [date]);
+
     const handleDateChange = (date: Dayjs | null) => {
         setDateFilter(date);
-
-        const newParams = new URLSearchParams(searchParams.toString());
         if (date) {
-            newParams.set("date", date.format("YYYY-MM-DD"));
+            setFilters({ date: date.format("YYYY-MM-DD") });
         } else {
-            newParams.delete("date");
+            setFilters({ date: undefined });
         }
-        setSearchParams(newParams);
     };
-    useEffect(() => {
-        const dateFromParams = searchParams.get("date");
-        setDateFilter(getDateFromQuery(dateFromParams || ""));
-    }, [searchParams]);
 
-    const getDateFromQuery = (dateQuery: string): Dayjs | null => {
-        if (dateQuery === "upcoming") {
-            setIsUpcoming(true);
-        } else {
-            setIsUpcoming(false);
-        }
+    function getDateFromQuery(dateQuery: string): Dayjs | null {
         if (dateQuery === "today") {
-            return dayjs(new Date());
+            return dayjs().startOf('day');
         } else {
-
             const parsedDate = dayjs(dateQuery, "YYYY-MM-DD");
             return parsedDate.isValid() ? parsedDate : null;
         }
-    };
+    }
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>

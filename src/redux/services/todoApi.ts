@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import axiosInstance from "~/api/api";
 import { apiEndpoints } from "~/api/endpoints";
+import { TodoFilter } from "~/types/filter";
 import { Todo } from "~/types/todo";
 
 const baseQuery = async ({

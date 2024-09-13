@@ -1,8 +1,9 @@
 import { Box, useTheme } from "@mui/material";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useFilteredTasks } from "~/hooks/useFilterTodos";
 import { useGetCurrentUserId } from "~/hooks/useGetCurrentUserId";
+import { useGetTodos } from "~/hooks/useGetTodos";
+import { useTodosFilter } from "~/hooks/useTodosFilter";
 import ControlPanel from "~components/ControlPanel/ControlPanel";
 import MySnackBar from "~components/MySnackBar/MySnackBar";
 import NoTodo from "~components/NoTodo/NoTodo";
@@ -20,13 +21,8 @@ export default function Main() {
   const { data: todos = [], error, isLoading } = useFetchTodosQuery(currentUserId!, {
     skip: !currentUserId,
   });
-  const {
-    finalTasks,
-    filteredTotal,
-    totalTasks,
-    currentPage,
-    isFiltering,
-  } = useFilteredTasks(todos);
+  const { search, category, sort, completed, date, page } = useTodosFilter();
+  const { filteredTodos, paginatedTasks, currentPage } = useGetTodos({ search, category, sort, completed, date, page })
   const theme = useTheme();
   useEffect(() => {
     if (error) {
@@ -56,21 +52,21 @@ export default function Main() {
           overflowX: "hidden",
         }}
       >
-        <MainHeader tasksCount={filteredTotal} />
+        <MainHeader tasksCount={paginatedTasks.length} />
         <ControlPanel />
 
         <Box flexGrow={1}>
-          {isLoading || isFiltering ? (
+          {isLoading ? (
             <TodoListSkeleton />
-          ) : finalTasks.length > 0 ? (
-            <TodoList tasks={finalTasks} />
+          ) : paginatedTasks.length > 0 ? (
+            <TodoList tasks={paginatedTasks} />
           ) : (
             <NoTodo />
           )}
         </Box>
 
         <Box mt="auto" width={1} display="flex" justifyContent="center" pb={2}>
-          <PaginationBar totalTasks={totalTasks} currentPage={currentPage} />
+          <PaginationBar totalTasks={filteredTodos.length} currentPage={currentPage} />
         </Box>
       </Box>
       <MySnackBar />
